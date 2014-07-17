@@ -26,32 +26,20 @@
 		     "required": "no",
 		     "type": "string"
 			}
-			],
-  "device_types":{
+  ],
+  "device_types": {
   		  "knxplugin.switch":{
 					"id" :"knxplugin.switch",
 					"description":"ON/OFF function",
 					"name":"Switch",	
-					"commands":[],
-					"sensors":[],
+					"commands":["switch"],
+					"sensors":["state"],
 					"parameters":[
-							{
-							"key":"address1",
-							"description":"Address groups for command",
-							"type":"string",
-							"xpl":false
-							},
 							{
 							"key":"Cmd_Datapoint",
 							"description":"the KNX datapoint type for command",
 							"type":"choice",
 							"choices":{"1.001":"Switch","1.008":"Up/Down","3.007":"Dimming Control","3.008":"Blinds Control","5.001":"Scaling","5.003":"Angle","6.xxx":"8bits signed Integer (EIS14)","7.xxx": "16bits unsigned integer (EIS14)","8.xxx":"16bit signed integer (EIS14)","9.xxx":"16bit unsigned integer (EIS14)","10.001":"time (EIS3)","11.001":"date (EIS4)","12.xxx": "32 bit unsigned interger","13.xxx":"32bit signed integer", "14.xxx":"32bit IEEE 754 floating point number","16.xxx":"String", "20.102":"heating mode (comfort/standby/night/frost)", "DT_HVACEib":"Basilic Datapoint" },
-							"xpl":false
-							},
-							{
-							"key":"address2",
-							"description":"Address groups for stat",
-							"type":"string",
 							"xpl":false
 							},
 							{
@@ -65,13 +53,72 @@
 				 }		 
 		},
 "commands": {
+    "switch": {
+        "name": "switch",
+        "return_confirmation": true,
+        "parameters": [
+            {
+                "key": "value",
+                "data_type": "DT_Switch",
+                "conversion": ""
+            }
+        ],
+        "xpl_command": "switch"
+    }
 },
-
-"sensors":{
-        },
-
-"xpl_commands": {},
-
-"xpl_stats": { }
-
+"xpl_commands": {
+    "switch": {
+        "name": "switch",
+        "schema": "knx.basic",
+        "xplstat_name": "get_stats",
+        "parameters": {
+            "static": [],
+            "device": [
+                {
+                    "key": "address",
+                    "description": "The command address",
+                    "type": "string"
+                }
+            ]
+        }
+    }
+},
+"xpl_stats": {
+    "get_stats": {
+        "name": "get_stats",
+        "schema": "knx.basic",
+        "parameters": {
+            "static": [],
+            "device": [
+                {
+                    "key": "address",
+                    "description": "The stats address",
+                    "type": "string"
+                }
+            ],
+            "dynamic": [
+                {
+                    "key": "value",
+                    "ignore_values": "",
+                    "sensor": "state"
+                }
+            ]
+        }
+    }
+},
+"sensors": {
+    "state": {
+        "name": "state",
+        "data_type": "DT_Switch",
+        "conversion": "",
+        "incremental": false,
+        "history": {
+            "store": true,
+            "duplicate": false,
+            "max": 0,
+            "expire": 0,
+            "round_value": 0
+        }
+    }
+}
 }
