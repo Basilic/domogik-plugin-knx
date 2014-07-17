@@ -1,0 +1,76 @@
+# Lumiere du WC 
+datatype:1.001 adr_dmg:LWC adr_cmd:1/1/1 adr_stat:1/0/1 dpt_stat:1.001 check:false end 
+# Local technique 
+datatype:1.001 adr_dmg:LLOTEC adr_cmd:1/1/12 adr_stat:1/0/12 dpt_stat:1.001 check:false end 
+# Lumiere tableau elec 
+datatype:1.001 adr_dmg:LENT adr_cmd:1/1/2 adr_stat:1/0/2 dpt_stat:1.001 check:false end 
+# Lumiere bureau 
+datatype:1.001 adr_dmg:LBU adr_cmd:1/1/4 adr_stat:1/0/4 dpt_stat:1.001 check:false end 
+# Lumiere monte escalier 
+datatype:1.001 adr_dmg:LESC adr_cmd:1/1/11 adr_stat:1/0/11 dpt_stat:1.001 check:false end 
+# Lumiere sdb2 
+datatype:1.001 adr_dmg:LSDB2 adr_cmd:1/1/6 adr_stat:1/0/6 dpt_stat:1.001 check:false end 
+# Lumiere sdb1 
+datatype:1.001 adr_dmg:LSDB1 adr_cmd:1/1/8 adr_stat:1/0/8 dpt_stat:1.001 check:false end 
+# Lumiere cuisine 
+datatype:1.001 adr_dmg:LCU adr_cmd:1/1/3 adr_stat:1/0/3 dpt_stat:1.001 check:false end 
+# Lumiere chambre 1 
+datatype:1.001 adr_dmg:LCH1 adr_cmd:1/1/10 adr_stat:1/0/10 dpt_stat:1.001 check:false end 
+# Lumiere chambre 2 
+datatype:1.001 adr_dmg:LCH2 adr_cmd:1/1/14 adr_stat:1/0/14 dpt_stat:1.001 check:false end 
+# Lumiere chambre 3 
+datatype:1.001 adr_dmg:LCH3 adr_cmd:1/1/15 adr_stat:1/0/15 dpt_stat:1.001 check:false end 
+# variateur salon 
+datatype:5.001 adr_dmg:VarSalon adr_cmd:2/3/4 adr_stat:2/7/4 dpt_stat:5.001 check:false end 
+# variateur salle a manger 
+datatype:5.001 adr_dmg:VarSAL adr_cmd:2/3/5 adr_stat:2/7/5 dpt_stat:5.001 check:false end 
+# Lummiere mezzanine ch2 
+datatype:1.001 adr_dmg:LMCH2 adr_cmd:1/1/7 adr_stat:1/0/7 dpt_stat:1.001 check:false end 
+# Lummiere mezzanine ch3 
+datatype:1.001 adr_dmg:LMCH3 adr_cmd:1/1/5 adr_stat:1/0/5 dpt_stat:1.001 check:false end 
+# Lummiere Couloir machine a laver 
+datatype:1.001 adr_dmg:Lcoul adr_cmd:1/1/9 adr_stat:1/0/9 dpt_stat:1.001 check:false end 
+# Variateur applique salon 
+datatype:5.001 adr_dmg:VarAppSal adr_cmd:2/3/1 adr_stat:2/7/1 dpt_stat:5.001 check:false end 
+# Variateur bar 
+datatype:5.001 adr_dmg:AppCu adr_cmd:2/3/3 adr_stat:2/7/3 dpt_stat:5.001 check:false end 
+# Variateur applique TV 
+datatype:5.001 adr_dmg:VarSalTV adr_cmd:2/3/2 adr_stat:2/7/2 dpt_stat:5.001 check:false end 
+# Chauffage Salon-SAM-couloir-entrer-cuisine 
+datatype:DT_HVACEib adr_dmg:CHsalon adr_cmd:4/1/1 adr_stat:4/0/1 dpt_stat:DT_HVACEib check:false end 
+# Chauffage Bureau 
+datatype:DT_HVACEib adr_dmg:CHBU adr_cmd:4/1/2 adr_stat:4/0/2 dpt_stat:DT_HVACEib check:false end 
+# Chauffage CH3 
+datatype:DT_HVACEib adr_dmg:CHCH3 adr_cmd:4/1/3 adr_stat:4/0/3 dpt_stat:DT_HVACEib check:false end 
+# Chauffage sdb2 
+datatype:DT_HVACEib adr_dmg:CHSDB2 adr_cmd:4/1/4 adr_stat:4/0/4 dpt_stat:DT_HVACEib check:false end 
+# Chauffage CH2 
+datatype:DT_HVACEib adr_dmg:CHCH2 adr_cmd:4/1/5 adr_stat:4/0/5 dpt_stat:DT_HVACEib check:false end 
+# Chauffage CH1 
+datatype:DT_HVACEib adr_dmg:CHCH1 adr_cmd:4/1/6 adr_stat:4/0/6 dpt_stat:DT_HVACEib check:false end 
+# Chauffage General 
+datatype:DT_HVACEib adr_dmg:CHGENE adr_cmd:4/1/0 adr_stat:4/1/0 dpt_stat:DT_HVACEib check:false end 
+# Volet general 
+datatype:1.008 adr_dmg:volet_general adr_cmd:10/1/0 adr_stat:10/1/0 dpt_stat:1.008 check:false end
+#Volet TV
+datatype:1.008 adr_dmg:volet_tv adr_cmd:10/1/16 adr_stat:10/1/16 dpt_stat:1.008 check:false end 
+# volet de l'entree 
+datatype:1.008 adr_dmg:volet_entree adr_cmd:10/1/2 adr_stat:10/1/2 dpt_stat:1.008 check:false end 
+# volet CH1 et sdb1 
+datatype:1.008 adr_dmg:volet_CH1_sdb1 adr_cmd:10/1/3 adr_stat:10/1/3 dpt_stat:1.008 check:false end 
+# volet CH2 
+datatype:1.008 adr_dmg:volet_CH2 adr_cmd:10/1/4 adr_stat:10/1/4 dpt_stat:1.008 check:false end 
+# facade ruelle 
+datatype:1.008 adr_dmg:volet_ruelle adr_cmd:10/1/1 adr_stat:10/1/1 dpt_stat:1.008 check:false end 
+# facade grande rue 
+datatype:1.008 adr_dmg:volet_GRrue adr_cmd:10/1/14 adr_stat:10/1/14 dpt_stat:1.008 check:false end 
+# facade court 
+datatype:1.008 adr_dmg:volet_court adr_cmd:10/1/15 adr_stat:10/1/15 dpt_stat:1.008 check:false end 
+# Volet Bureau 
+datatype:1.008 adr_dmg:volet_bur adr_cmd:10/1/17 adr_stat:10/1/17 dpt_stat:1.008 check:false end 
+# Volet CH3 
+datatype:1.008 adr_dmg:volet_CH3 adr_cmd:10/1/18 adr_stat:10/1/18 dpt_stat:1.008 check:false end 
+# Lampe du salon en ON/off 
+datatype:1.001 adr_dmg:Lsalon adr_cmd:1/1/19 adr_stat:1/0/19 dpt_stat:1.001 check:false end 
+# Lampe salle a manger en ON/off 
+datatype:1.001 adr_dmg:LsalM adr_cmd:1/1/20 adr_stat:1/0/20 dpt_stat:1.001 check:false end 
