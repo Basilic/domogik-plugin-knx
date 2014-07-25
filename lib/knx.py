@@ -45,17 +45,17 @@ def decodeKNX(datatype, val):
       if datatype == "1.001": #DT_switch
          val=int(val.replace(" ",""),16)
          if val==1:
-            val="on"
+            val=1 #"on"
          if val==0:
-            val="off"
+            val=0 #"off"
 
       if datatype=="1.008": #DT_UpDown
          val=int(val.replace(" ",""),16)
          if val<=1:        
             if val==1:
-               val="Down"
+               val=1 #"Down"
             if val==0:
-               val="Up"
+               val=0 #"Up"
  
       if datatype == "3.007": #DT_Control_Dimming
          val=int(val.replace(" ",""),16)
