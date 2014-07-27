@@ -205,7 +205,7 @@ class KNXManager(XplPlugin):
    #                 msg.add_data({'command' : command+' bus'})
    #              else:
    #                 msg.add_data({'command': command+' ack'})
-
+		 msg.add_data({'command': "Write"})
                  msg.add_data({'address' :  dmgadr})
                  msg.add_data({'value': val})
                  print "sender: %s typeadr:%s" %(sender, typeadr)
@@ -218,9 +218,9 @@ class KNXManager(XplPlugin):
         if message.type=="xpl-cmnd":
     	   print "xpl-cmd OK"
     	   print message
-           #type_cmd = message.data['command']
+           
       	   try:
-              type_cmd = "Write"
+              type_cmd = message.data['command'] #type_cmd = "Write"
    	      groups = message.data['address']
    	      print groups
         #groups = "adr_dmg:"+groups+" "
