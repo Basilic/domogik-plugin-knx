@@ -40,7 +40,7 @@ source_suffix = '.txt'
 master_doc = 'contents'
 
 # General information about the project.
-project = u'plugin onewire'
+project = u'plugin knx'
 copyright = u'2012, Domogik'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -186,7 +186,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'plugin_onewire.tex', u'plugin onewire documentation',
+  ('index', 'plugin_knx.tex', u'plugin knx documentation',
    u'Domogik team', 'manual'),
 ]
 
@@ -216,7 +216,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'plugin_onewire', u'plugin onewire documentation',
+    ('index', 'plugin_knx', u'plugin knx documentation',
      [u'Domogik team'], 1)
 ]
 
@@ -230,7 +230,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'plugin onewire', u'plugin onewire documentation',
+  ('index', 'plugin knx', u'plugin knx documentation',
    u'Domogik team', 'Domogik', 'One line description of project.',
    'Miscellaneous'),
 ]

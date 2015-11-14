@@ -6,6 +6,6 @@ Table Of Content
 
 .. toctree::
     /index
-    /onewire
+    /knx
     /helpers
 

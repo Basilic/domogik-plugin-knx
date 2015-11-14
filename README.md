@@ -1,4 +1,4 @@
-domogik-plugin-onewire
+domogik-plugin-KNX
 ======================
 
-Onewire domogik plugin
+KNX domogik plugin

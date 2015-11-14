@@ -4,5 +4,5 @@
 Table of content
 ================
 
-* :doc:`Plugin documentation </onewire>`
+* :doc:`Plugin documentation </knx>`
 * :doc:`Helpers documentation </helpers>`
