@@ -111,9 +111,20 @@ class KNXManager(XplPlugin):
 			print cmd
 			cmd_address=item["xpl_commands"][cmd]["parameters"][0]["value"]
 		print cmd_address
+		print "item Sensor"
+		print item["sensors"]
+		print "item xpl_stat"
+		for sensor in item["xpl_stats"]:
+			print sensor
+			sensor_address=item["xpl_stats"][sensor]["parameters"]["static"][0]["value"]
+	
 		ligne = ligne + " adr_cmd:"+ cmd_address
-		ligne = ligne +" adr_stat:"+ item["xpl_stats"]["get_stats"]["parameters"]["static"][0]["value"]
+
+		ligne = ligne +" adr_stat:"+ sensor_address
+#item["xpl_stats"]["get_stats"]["parameters"]["static"][0]["value"]
+
 		ligne = ligne +" dpt_stat:"+ item["parameters"]["Stat_Datapoint"]["value"]
+
 		listknx.append(ligne)
 		print ligne
 

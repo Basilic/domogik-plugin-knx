@@ -39,6 +39,29 @@
 							"key":"Cmd_Datapoint",
 							"description":"the KNX datapoint type for command",
 							"type":"choice",
+							"choices":{"1.001":"1.001-Switch"},
+							"xpl":false
+							},
+							{
+							"key":"Stat_Datapoint",
+							"description":"the KNX datapoint type for stat",
+							"type":"choice",
+							"choices":{"1.001":"Switch"},
+							"xpl":false
+							}
+						    ]
+				 },		 
+  		  "knxplugin.scale":{
+					"id" :"knxplugin.scale",
+					"description":"scale function",
+					"name":"Scale",	
+					"commands":["scale"],
+					"sensors":["scale_state"],
+					"parameters":[
+							{
+							"key":"Cmd_Datapoint",
+							"description":"the KNX datapoint type for command",
+							"type":"choice",
 							"choices":{"1.001":"1.001-Switch","1.008":"1.008-Up/Down","3.007":"3.007-Dimming Control","3.008":"3.008-Blinds Control","5.001":"5.001-Scaling","5.003":"5.003-Angle","6.xxx":"6.xxx-8bits signed Integer (EIS14)","7.xxx": "7.xxx-16bits unsigned integer (EIS14)","8.xxx":"8.xxx-16bit signed integer (EIS14)","9.xxx":"9.xxx-16bit unsigned integer (EIS14)","10.001":"10.001-time (EIS3)","11.001":"11.001-date (EIS4)","12.xxx": "12.xxx-32 bit unsigned interger","13.xxx":"13.xxx-32bit signed integer", "14.xxx":"14.xxx-32bit IEEE 754 floating point number","16.xxx":"16.xxx-String", "20.102":"20.102-heating mode (comfort/standby/night/frost)", "DT_HVACEib":"DT_HVACEib-Basilic heating Datapoint" },
 							"xpl":false
 							},
@@ -50,7 +73,7 @@
 							"xpl":false
 							}
 						    ]
-				 }		 
+				 }
 		},
 "commands": {
     "switch": {
@@ -64,6 +87,19 @@
             }
         ],
         "xpl_command": "switch"
+    },
+
+ "scale": {
+        "name": "scale",
+        "return_confirmation": true,
+        "parameters": [
+            {
+                "key": "value",
+                "data_type": "DT_Scaling",
+                "conversion": ""
+            }
+        ],
+        "xpl_command": "scale"
     }
 },
 "xpl_commands": {
@@ -86,8 +122,29 @@
                 }
             ]
         }
+    },
+"scale": {
+        "name": "scale",
+        "schema": "knx.basic",
+        "xplstat_name": "get_stats_scale",
+        "parameters": {
+            "static": [
+            	{
+            		"key":"command",
+            		"value": "Write"
+            		}
+            		],
+            "device": [
+                {
+                    "key": "address",
+                    "description": "The command address",
+                    "type": "string"
+                }
+            ]
+        }
     }
 },
+
 "xpl_stats": {
     "get_stats": {
         "name": "get_stats",
@@ -109,7 +166,29 @@
                 }
             ]
         }
+    },
+    "get_stats_scale": {
+        "name": "get_stats_scale",
+        "schema": "knx.basic",
+        "parameters": {
+            "static": [],
+            "device": [
+                {
+                    "key": "address",
+                    "description": "The stats address",
+                    "type": "string"
+                }
+            ],
+            "dynamic": [
+                {
+                    "key": "value",
+                    "ignore_values": "",
+                    "sensor": "scale_state"
+                }
+            ]
+        }
     }
+
 },
 "sensors": {
     "state": {
@@ -117,6 +196,21 @@
         "data_type": "DT_Switch",
         "conversion": "",
         "incremental": false,
+	"timeout": 0,
+        "history": {
+            "store": true,
+            "duplicate": false,
+            "max": 0,
+            "expire": 0,
+            "round_value": 0
+        }
+    },
+"scale_state": {
+        "name": "state",
+        "data_type": "DT_Scaling",
+        "conversion": "",
+        "incremental": false,
+	"timeout": 0,
         "history": {
             "store": true,
             "duplicate": false,
