@@ -130,7 +130,7 @@ class KNXManager(XplPlugin):
 
 	self.log.info("Plugin ready :)")
 	print "Self.ready"
-	self.ready
+	self.ready()
 	
 		
 
