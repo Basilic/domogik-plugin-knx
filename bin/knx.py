@@ -105,25 +105,37 @@ class KNXManager(XplPlugin):
 	#print len(self.device)
 	for item in self.device:
 		#print item
-		ligne="datatype:"+item["parameters"]["Cmd_Datapoint"]["value"]
-		ligne = ligne + " adr_dmg:"+ item["name"]
+		
+		
+		cmd_address=""
 		for cmd in item["xpl_commands"]:
 			print cmd
 			cmd_address=item["xpl_commands"][cmd]["parameters"][0]["value"]
 		print cmd_address
-		print "item Sensor"
-		print item["sensors"]
-		print "item xpl_stat"
+		sensor_address=""
 		for sensor in item["xpl_stats"]:
 			print sensor
 			sensor_address=item["xpl_stats"][sensor]["parameters"]["static"][0]["value"]
-	
-		ligne = ligne + " adr_cmd:"+ cmd_address
 
-		ligne = ligne +" adr_stat:"+ sensor_address
-#item["xpl_stats"]["get_stats"]["parameters"]["static"][0]["value"]
+		
 
-		ligne = ligne +" dpt_stat:"+ item["parameters"]["Stat_Datapoint"]["value"]
+		if cmd_address != "" and sensor_address !="":
+			print "Aucun de null"
+			cmd_DT = item["parameters"]["Cmd_Datapoint"]["value"]
+			stat_DT = item["parameters"]["Stat_Datapoint"]["value"]
+		elif cmd_address != "" and sensor_address =="":
+			print "Sensor null"
+			cmd_DT = item["parameters"]["Cmd_Datapoint"]["value"]
+			stat_DT = item["parameters"]["Cmd_Datapoint"]["value"]
+		elif sensor_address !=""and cmd_address =="":
+			print "Commande null"
+			cmd_DT = item["parameters"]["Stat_Datapoint"]["value"]
+			stat_DT = item["parameters"]["Stat_Datapoint"]["value"]
+		else:
+			cmd_DT = ""
+			stat_DT = ""
+
+		ligne= "datatype:"+ cmd_DT + " adr_dmg:"+ item["name"]+ " adr_cmd:"+ cmd_address + " adr_stat:"+ sensor_address +" dpt_stat:"+ stat_DT
 
 		listknx.append(ligne)
 		print ligne

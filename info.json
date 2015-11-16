@@ -17,17 +17,25 @@
 	        "version": "0.4"
 	    },
 
-  "configuration": [
- 		    {
-		     "default": "u",
-		     "description": "KNX adapter device",
-		     "key": "device",
-		     "name": "Device",
-		     "required": "no",
-		     "type": "string"
-			}
-  ],
+  "configuration": [],
+
   "device_types": {
+  		"knxplugin.Number":{
+					"id" :"knxplugin.Number",
+					"description":"Number sensor",
+					"name":"Number",	
+					"commands":[],
+					"sensors":["number_state"],
+					"parameters":[
+							{
+							"key":"Stat_Datapoint",
+							"description":"the KNX datapoint type for stat",
+							"type":"choice",
+							"choices":{"6.xxx":"8bits signed Integer (EIS14)","7.xxx": "16bits unsigned integer (EIS14)","8.xxx":"16bit signed integer (EIS14)","9.xxx":"16bit unsigned integer (EIS14)","12.xxx": "32 bit unsigned interger","13.xxx":"32bit signed integer", "14.xxx":"32bit IEEE 754 floating point number"},
+							"xpl":false
+							}
+						    ]
+				 },
   		  "knxplugin.switch":{
 					"id" :"knxplugin.switch",
 					"description":"ON/OFF function",
@@ -187,6 +195,27 @@
                 }
             ]
         }
+    },
+ "get_stats_number": {
+        "name": "get_stats_number",
+        "schema": "knx.basic",
+        "parameters": {
+            "static": [],
+            "device": [
+                {
+                    "key": "address",
+                    "description": "The stats address",
+                    "type": "string"
+                }
+            ],
+            "dynamic": [
+                {
+                    "key": "value",
+                    "ignore_values": "",
+                    "sensor": "number_state"
+                }
+            ]
+        }
     }
 
 },
@@ -208,6 +237,20 @@
 "scale_state": {
         "name": "state",
         "data_type": "DT_Scaling",
+        "conversion": "",
+        "incremental": false,
+	"timeout": 0,
+        "history": {
+            "store": true,
+            "duplicate": false,
+            "max": 0,
+            "expire": 0,
+            "round_value": 0
+        }
+    },
+"number_state": {
+        "name": "state",
+        "data_type": "DT_Number",
         "conversion": "",
         "incremental": false,
 	"timeout": 0,
