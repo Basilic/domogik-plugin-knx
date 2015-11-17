@@ -31,7 +31,7 @@
 							"key":"Stat_Datapoint",
 							"description":"the KNX datapoint type for stat",
 							"type":"choice",
-							"choices":{"6.xxx":"8bits signed Integer (EIS14)","7.xxx": "16bits unsigned integer (EIS14)","8.xxx":"16bit signed integer (EIS14)","9.xxx":"16bit unsigned integer (EIS14)","12.xxx": "32 bit unsigned interger","13.xxx":"32bit signed integer", "14.xxx":"32bit IEEE 754 floating point number"},
+"choices":{"6.xxx":"6.xxx-8bits signed Integer (EIS14)","7.xxx": "7.xxx-16bits unsigned integer (EIS14)","8.xxx":"8.xxx-16bit signed integer (EIS14)","9.xxx":"9.xxx-16bit unsigned integer (EIS14)","12.xxx": "12.xxx-32 bit unsigned interger","13.xxx":"13.xxx-32bit signed integer", "14.xxx":"14.xxx-32bit IEEE 754 floating point number"},
 							"xpl":false
 							}
 						    ]
@@ -54,7 +54,7 @@
 							"key":"Stat_Datapoint",
 							"description":"the KNX datapoint type for stat",
 							"type":"choice",
-							"choices":{"1.001":"Switch"},
+							"choices":{"1.001":"1.001-Switch"},
 							"xpl":false
 							}
 						    ]
@@ -70,14 +70,14 @@
 							"key":"Cmd_Datapoint",
 							"description":"the KNX datapoint type for command",
 							"type":"choice",
-							"choices":{"1.001":"1.001-Switch","1.008":"1.008-Up/Down","3.007":"3.007-Dimming Control","3.008":"3.008-Blinds Control","5.001":"5.001-Scaling","5.003":"5.003-Angle","6.xxx":"6.xxx-8bits signed Integer (EIS14)","7.xxx": "7.xxx-16bits unsigned integer (EIS14)","8.xxx":"8.xxx-16bit signed integer (EIS14)","9.xxx":"9.xxx-16bit unsigned integer (EIS14)","10.001":"10.001-time (EIS3)","11.001":"11.001-date (EIS4)","12.xxx": "12.xxx-32 bit unsigned interger","13.xxx":"13.xxx-32bit signed integer", "14.xxx":"14.xxx-32bit IEEE 754 floating point number","16.xxx":"16.xxx-String", "20.102":"20.102-heating mode (comfort/standby/night/frost)", "DT_HVACEib":"DT_HVACEib-Basilic heating Datapoint" },
+							"choices":{"5.001":"5.001-Scaling"},
 							"xpl":false
 							},
 							{
 							"key":"Stat_Datapoint",
 							"description":"the KNX datapoint type for stat",
 							"type":"choice",
-							"choices":{"1.001":"Switch","1.008":"Up/Down","3.007":"Dimming Control","3.008":"Blinds Control","5.001":"Scaling","5.003":"Angle","6.xxx":"8bits signed Integer (EIS14)","7.xxx": "16bits unsigned integer (EIS14)","8.xxx":"16bit signed integer (EIS14)","9.xxx":"16bit unsigned integer (EIS14)","10.001":"time (EIS3)","11.001":"date (EIS4)","12.xxx": "32 bit unsigned interger","13.xxx":"32bit signed integer", "14.xxx":"32bit IEEE 754 floating point number","16.xxx":"String", "20.102":"heating mode (comfort/standby/night/frost)", "DT_HVACEib":"Basilic Datapoint" },
+							"choices":{"5.001":"5.001-Scaling"},
 							"xpl":false
 							}
 						    ]
