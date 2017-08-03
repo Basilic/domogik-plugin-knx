@@ -93,8 +93,7 @@
                 "data_type": "DT_Switch",
                 "conversion": ""
             }
-        ],
-        "xpl_command": "switch"
+        ]
     },
 
  "scale": {
@@ -106,8 +105,7 @@
                 "data_type": "DT_Scaling",
                 "conversion": ""
             }
-        ],
-        "xpl_command": "scale"
+        ]
     }
 },
 "xpl_commands": {

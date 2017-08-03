@@ -486,32 +486,33 @@ class KNX:
         """ open
             @param device :
         """
-        print("Lancement de EIBD")
+#        print("Lancement de EIBD")
 #        device example : "ipt:192.168.0.148"
-        command = "eibd -i -d -D %s" 
-        print("lancement de la commande: %s" %command)
-        subp = subprocess.Popen(command, shell=True)
-        self.eibd_pid = subp.pid
-        print("attente du retour")
-        subp.wait()
-        print("Rendu")
+#       command = "eibd -i -d -D %s" 
+#        print("lancement de la commande: %s" %command)
+#        subp = subprocess.Popen(command, shell=True)
+#        self.eibd_pid = subp.pid
+#        print("attente du retour")
+#        subp.wait()
+#        print("Rendu")
 
     def close(self):
         """ close t
         """
 #        subp = subprocess.Popen("kill -9 %s" % self.eibd_pid, shell=True)
-        subp = subprocess.Popen("pkill groupsock*", shell=True)
-        print("pkill groupsock")
+#        subp = subprocess.Popen("pkill groupsock*", shell=True)
+#        print("pkill groupsock")
 #        TODO : add check and kill -9 if necessary
 
     def listen(self):
-        command = "groupsocketlisten ip:127.0.0.1"
+        command = "knxtool groupsocketlisten ip:127.0.0.1"
         self.pipe = subprocess.Popen(command,
                      shell = True,
                      bufsize = 1024,
                      stdout = subprocess.PIPE
                      ).stdout
-        self._read = True                                                       
+        self._read = True   
+        print "Lancement du listen"                                                    
 
         while self._read:
             data = self.pipe.readline()
@@ -520,8 +521,11 @@ class KNX:
             self._callback(data)
 
     def stop_listen(self):
+	print "Arret du listen"
+        self.pipe.kill()
         print("Arret du listen")
         self._read = False
+	
 
 if __name__ == "__main__":                                                      
     device = "ipt:192.168.1.148"                                                        

@@ -35,23 +35,26 @@ Implements
 @organization: Domogik
 """
 
-#from urllib import *
 from domogik.xpl.common.xplconnector import Listener
 from domogik.xpl.common.plugin import XplPlugin
 from domogik.xpl.common.xplmessage import XplMessage
-#from domogik.xpl.common.queryconfig import Query
 from domogik_packages.plugin_knx.lib.knx import KNXException
 from domogik_packages.plugin_knx.lib.knx import KNX
 from domogik_packages.plugin_knx.lib.knx import decodeKNX
 from domogik_packages.plugin_knx.lib.knx import encodeKNX
-#from domogik.common.configloader import *
+
+from domogik.common.plugin import Plugin
+from domogikmq.message import MQMessage
+
+
+
 
 import threading
 import subprocess
 
 listknx=[]
 
-class KNXManager(XplPlugin):
+class KNXManager(Plugin):
     """ Implements a listener for KNX command messages 
         and launch background listening for KNX events
     """
@@ -59,26 +62,22 @@ class KNXManager(XplPlugin):
     def __init__(self):
         """ Create listener and launch bg listening
         """
-        XplPlugin.__init__(self, name = 'knx')
+        Plugin.__init__(self,name='knx')
 
-   
+# check if the plugin is configured. If not, this will stop the plugin and log an error
+        if not self.check_configured():
+            return  
+
+ 
         # Configuration : KNX device
-       # self._config = Query(self.myxpl, self.log)
-#        device = self._config.query('knx', 'device')
 
         ### Create KNX object
-        try:
-            self.knx = KNX(self.log, self.send_xpl)
-            self.log.info("Open KNX")
-#            self.knx.open(device)
+	knx_device = str(self.get_config('knx'))
+	knx_cache = self.get_config('knx')
 
-        except KNXException as err:
-            self.log.error(err.value)
-            print(err.value)
-            self.force_leave()
-            return
+	self.device=self.get_device_list(quit_if_no_device = True)
 
-        ### Start listening 
+        self.knx = KNX(self.log, self.send_pub_data)
         try:
             self.log.info("Start listening to KNX")
             knx_listen = threading.Thread(None,
@@ -89,45 +88,30 @@ class KNXManager(XplPlugin):
             knx_listen.start()
         except KNXException as err:
             self.log.error(err.value)
-            print(err.value)
             self.force_leave()
             return
 
 
-        ### Create listeners for commands
-        self.log.info("Creating listener for KNX")
-        Listener(self.knx_cmd, self.myxpl,{'schema':'knx.basic'})
-        self.add_stop_cb(self.knx.close)
-        self.enable_hbeat()
-
-
-	self.device=self.get_device_list(quit_if_no_device = True)
-	#print len(self.device)
 	for item in self.device:
-		#print item
-		
-		
+	 	log_message=""	
 		cmd_address=""
 		for cmd in item["xpl_commands"]:
-			print cmd
 			cmd_address=item["xpl_commands"][cmd]["parameters"][0]["value"]
-		print cmd_address
+
 		sensor_address=""
 		for sensor in item["xpl_stats"]:
-			print sensor
 			sensor_address=item["xpl_stats"][sensor]["parameters"]["static"][0]["value"]
 
-		
-
 		if cmd_address != "" and sensor_address !="":
-			print "Aucun de null"
 			cmd_DT = item["parameters"]["Cmd_Datapoint"]["value"]
 			stat_DT = item["parameters"]["Stat_Datapoint"]["value"]
 		elif cmd_address != "" and sensor_address =="":
-			print "Sensor null"
-			cmd_DT = item["parameters"]["Cmd_Datapoint"]["value"]
+                        log_message=log_message + "Sensor is null "
+		        self.log.info("No sensor for this device")	
+                        cmd_DT = item["parameters"]["Cmd_Datapoint"]["value"]
 			stat_DT = item["parameters"]["Cmd_Datapoint"]["value"]
 		elif sensor_address !=""and cmd_address =="":
+                        log_message=log_message + "Command is null "
 			print "Commande null"
 			cmd_DT = item["parameters"]["Stat_Datapoint"]["value"]
 			stat_DT = item["parameters"]["Stat_Datapoint"]["value"]
@@ -135,22 +119,19 @@ class KNXManager(XplPlugin):
 			cmd_DT = ""
 			stat_DT = ""
 
-		ligne= "datatype:"+ cmd_DT + " adr_dmg:"+ item["name"]+ " adr_cmd:"+ cmd_address + " adr_stat:"+ sensor_address +" dpt_stat:"+ stat_DT
-
+		ligne= "datatype:"+ cmd_DT + " adr_dmg:"+ item["name"]+ " adr_cmd:"+ cmd_address + " adr_stat:"+ sensor_address +" dpt_stat:"+ stat_DT +"device_id:"
+		self.log.info ( log_message + ligne)
 		listknx.append(ligne)
-		print ligne
 
 	self.log.info("Plugin ready :)")
-	print "Self.ready"
 	self.ready()
-	
-		
 
-    def send_xpl(self, data):
-        """ Send xpl-trig to give status change
+    def send_pub_data(self, data):
+        """ Send -trig to give status change
         """
         ### Identify the sender of the message
-        print "Send_XPL"
+        print "send MQ"
+        self.log.info("Send_MQ")
         lignetest=""
         command = ""
         dmgadr =""
@@ -171,7 +152,7 @@ class KNXManager(XplPlugin):
            print "data== %s" %data
            groups = data[data.find('to')+2:data.find(':')]
            groups =":"+groups.strip()+" "
-           print "groups |%s|" %groups
+           self.log.info('groups |%s|' %groups)
 
         ### Search the sender in the config list
            i=0
@@ -193,7 +174,6 @@ class KNXManager(XplPlugin):
                  datatype=lignetest[lignetest.find('datatype:')+9:lignetest.find(' adr_dmg')]
                  msg=XplMessage()
                  msg.set_schema('knx.basic')
-
                  if command != 'Read':
                     val=data[data.find(':')+1:-1]
                     val = val.strip()
@@ -224,16 +204,23 @@ class KNXManager(XplPlugin):
                     else:
                        msg.set_type("xpl-trig")
 
-   #              if sender!="0.0.0":
-   #                 msg.add_data({'command' : command+' bus'})
-   #              else:
-   #                 msg.add_data({'command': command+' ack'})
 		 msg.add_data({'command': "Write"})
                  msg.add_data({'address' :  dmgadr})
                  msg.add_data({'value': val})
-                 print "sender: %s typeadr:%s" %(sender, typeadr)
+                 self.log.info('sender: %s typeadr:%s val:%s' %(sender, typeadr,val))
 
-                 self.myxpl.send(msg)
+                 try:
+                     self._pub.send_event('client.sensor', val)
+                     return True, None
+                 except:
+                     self.log.info(
+                        u"Error while sending sensor MQ message for sensor values : {0}".format(traceback.format_exc()))
+                     return False, u"Error while sending sensor MQ message for sensor values : {0}".format(
+                        traceback.format_exc())
+
+                # self.myxpl.send(msg)
+
+
 
     def knx_cmd(self, message):
     	print "Receive message %s" %message.type
@@ -282,10 +269,10 @@ class KNXManager(XplPlugin):
                  print "Valeur modifier |%s|" %valeur
                
                  if data_type=="s":
-                    command="groupswrite ip:127.0.0.1 %s %s" %(cmdadr, valeur)
+                    command="knxtool groupswrite ip:127.0.0.1 %s %s" %(cmdadr, valeur)
                   
                  if data_type=="l":
-                    command="groupwrite ip:127.0.0.1 %s %s" %(cmdadr, valeur)
+                    command="knxtool groupwrite ip:127.0.0.1 %s %s" %(cmdadr, valeur)
             
               #   msg=XplMessage()
               #   msg.set_schema('knx.basic')
@@ -296,16 +283,16 @@ class KNXManager(XplPlugin):
 
            if type_cmd == "Read":
               print("dmg Read")
-              command="groupread ip:127.0.0.1 %s" %cmdadr
+              command="knxtool groupread ip:127.0.0.1 %s" %cmdadr
 
            if type_cmd == "Response":
               print("dmg Response")
               data_type=message.data['type']
               valeur = message.data['value']
               if data_type=="s":
-                 command="groupsresponse ip:127.0.0.1 %s %s" %(cmdadr,valeur)
+                 command="knxtool groupsresponse ip:127.0.0.1 %s %s" %(cmdadr,valeur)
               if data_type=="l":
-                 command="groupresponse ip:127.0.0.1 %s %s" %(cmdadr,valeur)
+                 command="knxtool groupresponse ip:127.0.0.1 %s %s" %(cmdadr,valeur)
  
            if command!="":
               print "envoie de la command %s" %command
