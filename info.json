@@ -50,13 +50,25 @@
 							"choices":{"1.001":"1.001-Switch"},
 							"xpl":false
 							},
+					               {
+					                "key": "address_cmd",
+					                "description": "The command address",
+					                "type": "string",
+                                                        "xpl":false
+					                },
 							{
 							"key":"Stat_Datapoint",
 							"description":"the KNX datapoint type for stat",
 							"type":"choice",
 							"choices":{"1.001":"1.001-Switch"},
 							"xpl":false
-							}
+							},
+                                                        {
+       						        "key": "address_stat",
+					                "description": "The stats address",
+					                "type": "string",
+                                                        "xpl":false
+					                }
 						    ]
 				 },		 
   		  "knxplugin.scale":{
