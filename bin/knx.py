@@ -211,7 +211,7 @@ class KNXManager(Plugin):
                  msg.add_data({'value': val})
                  self.log.info('sender: %s typeadr:%s val:%s' %(sender, typeadr,val))
                  data={}
-                 sensor_id='40' # mettre le sensor id correspondant au group knx
+                 sensor_id='41' # mettre le sensor id correspondant au group knx
                  data[sensor_id]=val
                  try:
                      self._pub.send_event('client.sensor' ,  data)
@@ -226,14 +226,18 @@ class KNXManager(Plugin):
 
 
 
-	def on_mq_request(self, message):
-	
-		Plugin.on_mdp_request(self,message)
-	
-	    	print "Receive message %s" %message.type
+	def on_mq_request(self, msg):
+		print "On MQ Resquest"	
+		Plugin.on_mdp_request(self,msg)
+		print "TESSSSSSSSSSSSSST"
+		message = msg
+		print message	
+#	    	print "Receive message %s" %message.type
 	    	command=""
 	    	print message
-	        if msg.get_action() == "client.cmd":         
+	        if msg.get_action() == "client.cmd":        
+			valeur=data["value"] 
+			command="knxtool groupswrite ip:127.0.0.1 1/1/4 %s" %(valeur)
 			try:
 				type_cmd = message.data['command'] #type_cmd = "Write"
 				groups = message.data['address']
@@ -273,10 +277,10 @@ class KNXManager(Plugin):
 			valeur=value[1]   
 			print "Valeur modifier |%s|" %valeur
 		
-		 if data_type=="s":
-			command="knxtool groupswrite ip:127.0.0.1 %s %s" %(cmdadr, valeur)
+		if data_type=="s":
+		 	command="knxtool groupswrite ip:127.0.0.1 %s %s" %(cmdadr, valeur)
 		  
-		 if data_type=="l":
+		if data_type=="l":
 			command="knxtool groupwrite ip:127.0.0.1 %s %s" %(cmdadr, valeur)
 		
 		#   msg=XplMessage()
@@ -309,15 +313,16 @@ class KNXManager(Plugin):
 			print("erreur command non définir, type cmd= %s" %type_cmd)
 
 
-   def send_rep_ack(self, status, reason, cmd_id, dev_name):
-        """ Send ACQ to a command via MQ
-        """
-        self.log.info(u"==> Reply ACK to command id '%s' for device '%s'" % (cmd_id, dev_name))
-        reply_msg = MQMessage()
-        reply_msg.set_action('client.cmd.result')
-        reply_msg.add_data('status', status)
-        reply_msg.add_data('reason', reason)
-        self.reply(reply_msg.get())
+	def send_rep_ack(self, status, reason, cmd_id, dev_name):
+	        """ Send ACQ to a command via MQ
+	        """
+                print "send_rep_ack"
+	        self.log.info(u"==> Reply ACK to command id '%s' for device '%s'" % (cmd_id, dev_name))
+	        reply_msg = MQMessage()
+	        reply_msg.set_action('client.cmd.result')
+	        reply_msg.add_data('status', status)
+	        reply_msg.add_data('reason', reason)
+	        self.reply(reply_msg.get())
 
 if __name__ == "__main__":
     INST = KNXManager()
