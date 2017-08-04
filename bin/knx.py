@@ -35,20 +35,12 @@ Implements
 @organization: Domogik
 """
 
-from domogik.xpl.common.xplconnector import Listener
-from domogik.xpl.common.plugin import XplPlugin
-from domogik.xpl.common.xplmessage import XplMessage
 from domogik_packages.plugin_knx.lib.knx import KNXException
 from domogik_packages.plugin_knx.lib.knx import KNX
 from domogik_packages.plugin_knx.lib.knx import decodeKNX
 from domogik_packages.plugin_knx.lib.knx import encodeKNX
-
 from domogik.common.plugin import Plugin
 from domogikmq.message import MQMessage
-
-
-
-
 import threading
 import subprocess
 
@@ -73,15 +65,14 @@ class KNXManager(Plugin):
 
         ### Create KNX object
 	knx_device = str(self.get_config('knx'))
-	knx_cache = self.get_config('knx')
-
+	self.knx_host = self.get_config('host_ip')
 	self.device=self.get_device_list(quit_if_no_device = True)
 
-        self.knx = KNX(self.log, self.send_pub_data)
+        self.knx = KNX(self.log, self.send_pub_data )
         try:
             self.log.info("Start listening to KNX")
             knx_listen = threading.Thread(None,
-                                          self.knx.listen,
+                                          self.knx.listen(self.knx_host),
                                           "listen_knx",
                                           (),
                                           {})
@@ -237,7 +228,7 @@ class KNXManager(Plugin):
 	    	print message
 	        if msg.get_action() == "client.cmd":        
 			valeur=data["value"] 
-			command="knxtool groupswrite ip:127.0.0.1 1/1/4 %s" %(valeur)
+			command="knxtool groupswrite ip:%s 1/1/4 %s" %(self.knx_host,valeur)
 			try:
 				type_cmd = message.data['command'] #type_cmd = "Write"
 				groups = message.data['address']
@@ -278,10 +269,10 @@ class KNXManager(Plugin):
 			print "Valeur modifier |%s|" %valeur
 		
 		if data_type=="s":
-		 	command="knxtool groupswrite ip:127.0.0.1 %s %s" %(cmdadr, valeur)
+		 	command="knxtool groupswrite ip:%s %s %s" %(self.knx_host,cmdadr, valeur)
 		  
 		if data_type=="l":
-			command="knxtool groupwrite ip:127.0.0.1 %s %s" %(cmdadr, valeur)
+			command="knxtool groupwrite ip:%s %s %s" %(self.knx_host,cmdadr, valeur)
 		
 		#   msg=XplMessage()
 		#   msg.set_schema('knx.basic')
@@ -292,7 +283,7 @@ class KNXManager(Plugin):
 		
 		if type_cmd == "Read":
 			print("dmg Read")
-			command="knxtool groupread ip:127.0.0.1 %s" %cmdadr
+			command="knxtool groupread ip:%s %s" %(self.knx_host,cmdadr)
 		
 		if type_cmd == "Response":
 			print("dmg Response")
@@ -300,10 +291,10 @@ class KNXManager(Plugin):
 			valeur = message.data['value']
 
 		if data_type=="s":
-			command="knxtool groupsresponse ip:127.0.0.1 %s %s" %(cmdadr,valeur)
+			command="knxtool groupsresponse ip:%s %s %s" %(self.knx_host,cmdadr,valeur)
 
 		if data_type=="l":
-			command="knxtool groupresponse ip:127.0.0.1 %s %s" %(cmdadr,valeur)
+			command="knxtool groupresponse ip:%s %s %s" %(self.knx_host,cmdadr,valeur)
 		
 		if command!="":
 			print "envoie de la command %s" %command

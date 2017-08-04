@@ -17,8 +17,15 @@
 	        "version": "0.4"
 	    },
 
-  "configuration": [],
-
+  "configuration": [{
+                        "default": "127.0.0.1",
+                        "description":"",
+                        "required": true,
+			"key": "host_ip",
+                        "name": "IP address for the daemon",
+                        "type": "string"
+			}
+],
   "device_types": {
   		"knxplugin.Number":{
 					"id" :"knxplugin.Number",

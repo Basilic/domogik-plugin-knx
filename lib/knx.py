@@ -430,7 +430,7 @@ def encodeKNX(datatype,val):
                for j in range(14-len(val)):
                   codage=codage+" 00"
             print codage
-            command="groupwrite ip:127.0.0.1 %s %s" %(cmdadr,codage)
+            command="groupwrite ip:%s %s %s" %(self.knx_host, cmdadr,codage)
             subp2=subprocess.Popen(command,shell=True)
       type_cmd="None" 
 
@@ -504,8 +504,8 @@ class KNX:
 #        print("pkill groupsock")
 #        TODO : add check and kill -9 if necessary
 
-    def listen(self):
-        command = "knxtool groupsocketlisten ip:127.0.0.1"
+    def listen(self, host):
+        command = "knxtool groupsocketlisten ip:%s" %host
         self.pipe = subprocess.Popen(command,
                      shell = True,
                      bufsize = 1024,
@@ -520,7 +520,8 @@ class KNX:
                 break
             self._callback(data)
 
-    def stop_listen(self):
+    def get_stop(self):
+#    def stop_listen(self):
 	print "Arret du listen"
         self.pipe.kill()
         print("Arret du listen")
