@@ -66,13 +66,15 @@ class KNXManager(Plugin):
         ### Create KNX object
 	knx_device = str(self.get_config('knx'))
 	self.knx_host = self.get_config('host_ip')
+	self.knx_host_type = self.get_config('host_type')
+
 	self.device=self.get_device_list(quit_if_no_device = True)
 
         self.knx = KNX(self.log, self.send_pub_data )
         try:
             self.log.info("Start listening to KNX")
             knx_listen = threading.Thread(None,
-                                          self.knx.listen(self.knx_host),
+                                          self.knx.listen(self.knx_host,"KNXTOOL"),
                                           "listen_knx",
                                           (),
                                           {})
@@ -213,8 +215,6 @@ class KNXManager(Plugin):
                      return False, u"Error while sending sensor MQ message for sensor values : {0}".format(
                         traceback.format_exc())
 
-                # self.myxpl.send(msg)
-
 
 
 	def on_mq_request(self, msg):
@@ -269,21 +269,15 @@ class KNXManager(Plugin):
 			print "Valeur modifier |%s|" %valeur
 		
 		if data_type=="s":
-		 	command="knxtool groupswrite ip:%s %s %s" %(self.knx_host,cmdadr, valeur)
+		 	command="groupswrite ip:%s %s %s" %(self.knx_host,cmdadr, valeur)
 		  
 		if data_type=="l":
-			command="knxtool groupwrite ip:%s %s %s" %(self.knx_host,cmdadr, valeur)
-		
-		#   msg=XplMessage()
-		#   msg.set_schema('knx.basic')
-		#   msg.add_data({'address': cmdadr})
-		#   msg.add_data({'value': val})
-		#   msg.set_type("xpl-trig")
-		#   self.myxpl.send(msg)
+			command="groupwrite ip:%s %s %s" %(self.knx_host,cmdadr, valeur)
+
 		
 		if type_cmd == "Read":
 			print("dmg Read")
-			command="knxtool groupread ip:%s %s" %(self.knx_host,cmdadr)
+			command="groupread ip:%s %s" %(self.knx_host,cmdadr)
 		
 		if type_cmd == "Response":
 			print("dmg Response")
@@ -291,12 +285,14 @@ class KNXManager(Plugin):
 			valeur = message.data['value']
 
 		if data_type=="s":
-			command="knxtool groupsresponse ip:%s %s %s" %(self.knx_host,cmdadr,valeur)
+			command="groupsresponse ip:%s %s %s" %(self.knx_host,cmdadr,valeur)
 
 		if data_type=="l":
-			command="knxtool groupresponse ip:%s %s %s" %(self.knx_host,cmdadr,valeur)
+			command="groupresponse ip:%s %s %s" %(self.knx_host,cmdadr,valeur)
 		
 		if command!="":
+		 	if self.knx_host_type == "KNXTOOL":
+		 		command= "knxtool %s" %command
 			print "envoie de la command %s" %command
 			subp=subprocess.Popen(command, shell=True)
 

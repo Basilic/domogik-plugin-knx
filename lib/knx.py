@@ -41,7 +41,7 @@ import subprocess
 def decodeKNX(datatype, val):
    if datatype != '' and val!='':
 
-  ### Decode the data function of the datapoint type
+  ### Decode the data using the datapoint knx type
       if datatype == "1.001": #DT_switch
          val=int(val.replace(" ",""),16)
          if val==1:
@@ -217,7 +217,7 @@ def decodeKNX(datatype, val):
 
 
 def encodeKNX(datatype,val):
-
+# Function to encode value in knx datapoint type
    valeur=val
    if datatype =="1.001":
       data_type="s"
@@ -482,30 +482,12 @@ class KNX:
         self._ser = None
 
 
-    def open(self):
-        """ open
-            @param device :
-        """
-#        print("Lancement de EIBD")
-#        device example : "ipt:192.168.0.148"
-#       command = "eibd -i -d -D %s" 
-#        print("lancement de la commande: %s" %command)
-#        subp = subprocess.Popen(command, shell=True)
-#        self.eibd_pid = subp.pid
-#        print("attente du retour")
-#        subp.wait()
-#        print("Rendu")
+    def listen(self, host, host_type):
 
-    def close(self):
-        """ close t
-        """
-#        subp = subprocess.Popen("kill -9 %s" % self.eibd_pid, shell=True)
-#        subp = subprocess.Popen("pkill groupsock*", shell=True)
-#        print("pkill groupsock")
-#        TODO : add check and kill -9 if necessary
-
-    def listen(self, host):
-        command = "knxtool groupsocketlisten ip:%s" %host
+        if host_type=="KNXTOOL":
+        	command = "knxtool groupsocketlisten ip:%s" %host
+        else:
+        	command = "groupsocketlisten ip:%s" %host
         self.pipe = subprocess.Popen(command,
                      shell = True,
                      bufsize = 1024,
@@ -521,18 +503,11 @@ class KNX:
             self._callback(data)
 
     def get_stop(self):
-#    def stop_listen(self):
 	print "Arret du listen"
         self.pipe.kill()
         print("Arret du listen")
         self._read = False
 	
-
-if __name__ == "__main__":                                                      
-    device = "ipt:192.168.1.148"                                                        
-    obj = KNX(None, decode)                                                     
-    obj.open(device)
-    obj.listen()           
 
 
     

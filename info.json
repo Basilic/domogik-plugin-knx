@@ -17,7 +17,16 @@
 	        "version": "0.4"
 	    },
 
-  "configuration": [{
+  "configuration": [
+			{
+                        "default": "KNXTOOL",
+                        "description":"",
+                        "required": true,
+			"key": "host_type",
+                        "name": "EIBD or KNXTOOL only",
+                        "type": "string"
+			},
+			{
                         "default": "127.0.0.1",
                         "description":"",
                         "required": true,
