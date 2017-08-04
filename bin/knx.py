@@ -95,12 +95,14 @@ class KNXManager(Plugin):
 	for item in self.device:
 	 	log_message=""	
 		cmd_address=""
-		for cmd in item["xpl_commands"]:
-			cmd_address=item["xpl_commands"][cmd]["parameters"][0]["value"]
+	        print item	
+#		for cmd in item["xpl_commands"]:
+			#cmd_address=item["xpl_commands"][cmd]["parameters"][0]["value"]
+        	cmd_address=item["parameters"]["address_cmd"]["value"]
 
 		sensor_address=""
-		for sensor in item["xpl_stats"]:
-			sensor_address=item["xpl_stats"][sensor]["parameters"]["static"][0]["value"]
+	#	for sensor in item["xpl_stats"]:
+		sensor_address=item["parameters"]["address_stat"]["value"]
 
 		if cmd_address != "" and sensor_address !="":
 			cmd_DT = item["parameters"]["Cmd_Datapoint"]["value"]
@@ -208,9 +210,11 @@ class KNXManager(Plugin):
                  msg.add_data({'address' :  dmgadr})
                  msg.add_data({'value': val})
                  self.log.info('sender: %s typeadr:%s val:%s' %(sender, typeadr,val))
-
+                 data={}
+                 sensor_id='40' # mettre le sensor id correspondant au group knx
+                 data[sensor_id]=val
                  try:
-                     self._pub.send_event('client.sensor', val)
+                     self._pub.send_event('client.sensor' ,  data)
                      return True, None
                  except:
                      self.log.info(
@@ -222,84 +226,98 @@ class KNXManager(Plugin):
 
 
 
-    def knx_cmd(self, message):
-    	print "Receive message %s" %message.type
-    	command=""
-        if message.type=="xpl-cmnd":
-    	   print "xpl-cmd OK"
-    	   print message
-           
-      	   try:
-              type_cmd = message.data['command'] #type_cmd = "Write"
-   	      groups = message.data['address']
-   	      print groups
-        #groups = "adr_dmg:"+groups+" "
-              lignetest=""
-              valeur=message.data['value']
-              print "Message XPL %s" %message
-              for i in range(len(listknx)):
-                 if listknx[i].find(groups)>=0:
-                    lignetest=listknx[i]
-                    break
-              print "ligne test=|%s|" %lignetest
-           except Exception, e:
-              lignetest=""
-              
-           
-           #si wirte groups_cmd/si read, groups stat
-           if lignetest!="":
-              print "Write_Bus"
-              datatype=lignetest[lignetest.find('datatype:')+9:lignetest.find(' adr_dmg')]
-              cmdadr=lignetest[lignetest.find('adr_cmd:')+8:lignetest.find(' adr_stat')]
-              command=""
-              print "Command: |%s|" %type_cmd
-              print "Groups: |%s|" %cmdadr
-              print "datatype: |%s|" %datatype
-              print "valeur avant codage: |%s|" %valeur
- 
-              if type_cmd=="Write":
-                 print("dmg Write %s") %type_cmd
-                 valeur = message.data['value']
-                 print "valeur avant modif:%s" %valeur
-                 val=valeur
+	def on_mq_request(self, message):
+	
+		Plugin.on_mdp_request(self,message)
+	
+	    	print "Receive message %s" %message.type
+	    	command=""
+	    	print message
+	        if msg.get_action() == "client.cmd":         
+			try:
+				type_cmd = message.data['command'] #type_cmd = "Write"
+				groups = message.data['address']
+				print groups
+				#groups = "adr_dmg:"+groups+" "
+				lignetest=""
+				valeur=message.data['value']
+				print "Message XPL %s" %message
+				for i in range(len(listknx)):
+					if listknx[i].find(groups)>=0:
+						lignetest=listknx[i]
+						break
+				print "ligne test=|%s|" %lignetest
+			except Exception, e:
+				lignetest=""
+	              
+	           
+	           #si wirte groups_cmd/si read, groups stat
+		if lignetest!="":
+			print "Write_Bus"
+			datatype=lignetest[lignetest.find('datatype:')+9:lignetest.find(' adr_dmg')]
+			cmdadr=lignetest[lignetest.find('adr_cmd:')+8:lignetest.find(' adr_stat')]
+			command=""
+			print "Command: |%s|" %type_cmd
+			print "Groups: |%s|" %cmdadr
+			print "datatype: |%s|" %datatype
+			print "valeur avant codage: |%s|" %valeur
+		
+		if type_cmd=="Write":
+			print("dmg Write %s") %type_cmd
+			valeur = message.data['value']
+			print "valeur avant modif:%s" %valeur
+			val=valeur
+			
+			value=encodeKNX(datatype, val)
+			data_type=value[0]
+			valeur=value[1]   
+			print "Valeur modifier |%s|" %valeur
+		
+		 if data_type=="s":
+			command="knxtool groupswrite ip:127.0.0.1 %s %s" %(cmdadr, valeur)
+		  
+		 if data_type=="l":
+			command="knxtool groupwrite ip:127.0.0.1 %s %s" %(cmdadr, valeur)
+		
+		#   msg=XplMessage()
+		#   msg.set_schema('knx.basic')
+		#   msg.add_data({'address': cmdadr})
+		#   msg.add_data({'value': val})
+		#   msg.set_type("xpl-trig")
+		#   self.myxpl.send(msg)
+		
+		if type_cmd == "Read":
+			print("dmg Read")
+			command="knxtool groupread ip:127.0.0.1 %s" %cmdadr
+		
+		if type_cmd == "Response":
+			print("dmg Response")
+			data_type=message.data['type']
+			valeur = message.data['value']
 
-                 value=encodeKNX(datatype, val)
-                 data_type=value[0]
-                 valeur=value[1]   
-                 print "Valeur modifier |%s|" %valeur
-               
-                 if data_type=="s":
-                    command="knxtool groupswrite ip:127.0.0.1 %s %s" %(cmdadr, valeur)
-                  
-                 if data_type=="l":
-                    command="knxtool groupwrite ip:127.0.0.1 %s %s" %(cmdadr, valeur)
-            
-              #   msg=XplMessage()
-              #   msg.set_schema('knx.basic')
-              #   msg.add_data({'address': cmdadr})
-              #   msg.add_data({'value': val})
-              #   msg.set_type("xpl-trig")
-              #   self.myxpl.send(msg)
+		if data_type=="s":
+			command="knxtool groupsresponse ip:127.0.0.1 %s %s" %(cmdadr,valeur)
 
-           if type_cmd == "Read":
-              print("dmg Read")
-              command="knxtool groupread ip:127.0.0.1 %s" %cmdadr
+		if data_type=="l":
+			command="knxtool groupresponse ip:127.0.0.1 %s %s" %(cmdadr,valeur)
+		
+		if command!="":
+			print "envoie de la command %s" %command
+			subp=subprocess.Popen(command, shell=True)
 
-           if type_cmd == "Response":
-              print("dmg Response")
-              data_type=message.data['type']
-              valeur = message.data['value']
-              if data_type=="s":
-                 command="knxtool groupsresponse ip:127.0.0.1 %s %s" %(cmdadr,valeur)
-              if data_type=="l":
-                 command="knxtool groupresponse ip:127.0.0.1 %s %s" %(cmdadr,valeur)
- 
-           if command!="":
-              print "envoie de la command %s" %command
-              subp=subprocess.Popen(command, shell=True)
-           if command=="":
-              print("erreur command non définir, type cmd= %s" %type_cmd)
+		if command=="":
+			print("erreur command non définir, type cmd= %s" %type_cmd)
 
+
+   def send_rep_ack(self, status, reason, cmd_id, dev_name):
+        """ Send ACQ to a command via MQ
+        """
+        self.log.info(u"==> Reply ACK to command id '%s' for device '%s'" % (cmd_id, dev_name))
+        reply_msg = MQMessage()
+        reply_msg.set_action('client.cmd.result')
+        reply_msg.add_data('status', status)
+        reply_msg.add_data('reason', reason)
+        self.reply(reply_msg.get())
 
 if __name__ == "__main__":
     INST = KNXManager()
