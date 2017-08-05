@@ -98,42 +98,35 @@ class KNXManager(Plugin):
 			print datapoint_list.get(item["parameters"]["address_stat"]["value"],"Default")
 			if datapoint_list.get(item["parameters"]["address_stat"]["value"],"Default")=="Default":	
 				datapoint_list[item["parameters"]["address_stat"]["value"]]=item["parameters"]["Stat_Datapoint"]["value"]
+		else:
+			if item["parameters"]["address_cmd"]["value"] != "":
+				sensors_list[item["parameters"]["address_cmd"]["value"]]=item["sensors"]["state"]["id"]
 
 		if item["parameters"]["address_cmd"]["value"] != "":
 			commands_list[item["commands"]["switch"]["id"]]=item["parameters"]["address_cmd"]["value"]
                         if datapoint_list.get(item["parameters"]["address_cmd"]["value"],"Default")=="Default":
                                 datapoint_list[item["parameters"]["address_cmd"]["value"]]=item["parameters"]["Cmd_Datapoint"]["value"]
 	
-	self.log.info('Sensor list: %s' %sensors_list)
-	self.log.info('Command List: %s' %commands_list)
-	self.log.info('Datapoint dict: %s' %datapoint_list)
+	self.log.info('Sensor list: |%s|' %sensors_list)
+	self.log.info('Command List: |%s|' %commands_list)
+	self.log.info('Datapoint dict: |%s|' %datapoint_list)
 	self.log.info("Plugin ready :)")
 	self.ready()
 
     def send_pub_data(self, data):
-        """ Send -trig to give status change
+        """ Send message on MQ when a message is detect by the knx pipe
         """
         ### Identify the sender of the message
-        print "send MQ"
-        self.log.info("Send_MQ")
-        lignetest=""
-        command = ""
-        dmgadr =""
-        msg_type=""
-        test = ""
-        val=""
-        sender = 'None'
-        sender = data[data.find('from')+4:data.find('to')-1]
-        sender = sender.strip()
+        self.log.info("Receive knx message from pipe")
+
+	#identification of the sender
+        sender = data[data.find('from')+4:data.find('to')-1].strip()
         groups = 'None'
         val = 'None'
-        msg_type = 'None'
-        command = 'None'
         if sender!="pageinatio":
-           print "emetteur |%s|" %sender
+
            command = data[0:4]  
            lignetest=""
-           print "data== %s" %data
            groups = data[data.find('to')+2:data.find(':')]
            groups =":"+groups.strip()+" "
            self.log.info('groups |%s|' %groups)
@@ -141,65 +134,23 @@ class KNXManager(Plugin):
         ### Search the sender in the config list
            i=0
            lignetest=""
-           for i in range(len(listknx)):
-              if listknx[i].find(groups)>=0:
-                 lignetest = listknx[i]
-                 typeadr=lignetest[lignetest.find(groups)-4:lignetest.find(groups)]
-                 typeadr=typeadr.replace("_","")
-                 test=lignetest[lignetest.find('datatype:')+9:]
-                 datatype=test[:test.find(' ')]
-                 if typeadr=="stat":
-                    if lignetest.find('dpt_stat')!=-1:
-                       test=lignetest[lignetest.find('dpt_stat:')+9:]
-                       datatype=test[:test.find(' ')]
-                 test=lignetest[lignetest.find('adr_dmg:')+8:]
-                 dmgadr=groups[1:].strip() #test[:test.find(' ')]
-                 print "dmg_adr = |%s|" %dmgadr
-                 datatype=lignetest[lignetest.find('datatype:')+9:lignetest.find(' adr_dmg')]
-                 msg=XplMessage()
-                 msg.set_schema('knx.basic')
-                 if command != 'Read':
-                    val=data[data.find(':')+1:-1]
-                    val = val.strip()
-                    print "valeur=|%s|" %val
-                    print "datapoint type=|%s|" %datatype
-                    msg_type = datatype
+          
+	   if sensors_list.get(groups,"Default")!="Default":
+		sensor_id=sensors_list(groups)
+		datatype=datapoint_list(groups)
 
-                    val=decodeKNX(datatype,val)
+               	val=data[data.find(':')+1:-1]
+               	val = val.strip()
 
-                    print "Valeur decode=|%s|" %val
+               	val=decodeKNX(datatype,val)
 
-                    if command == 'Writ':
-                       print("knx Write xpl-trig")
-                       command = 'Write'
-                       msg.set_type("xpl-trig")
-                    if command == 'Resp':
-                       print("knx Response xpl-stat")
-                       command = 'Response'
-                       if sender!="0.0.0":
-                          msg.set_type("xpl-stat")
-                       else:
-                          msg.set_type("xpl-trig")
-
-                 if command == 'Read':
-                    print("knx Read xpl-cmnd")
-                    if sender!="0.0.0":
-                       msg.set_type("xpl-cmnd")
-                    else:
-                       msg.set_type("xpl-trig")
-
-		 msg.add_data({'command': "Write"})
-                 msg.add_data({'address' :  dmgadr})
-                 msg.add_data({'value': val})
-                 self.log.info('sender: %s typeadr:%s val:%s' %(sender, typeadr,val))
-                 data={}
-                 sensor_id='41' # mettre le sensor id correspondant au group knx
-                 data[sensor_id]=val
-                 try:
-                     self._pub.send_event('client.sensor' ,  data)
-                     return True, None
-                 except:
-                     self.log.info(
+                data={}
+                data[sensor_id]=val
+                try:
+                	self._pub.send_event('client.sensor' ,  data)
+                	return True, None
+                except:
+                	self.log.info(
                         u"Error while sending sensor MQ message for sensor values : {0}".format(traceback.format_exc()))
                      return False, u"Error while sending sensor MQ message for sensor values : {0}".format(
                         traceback.format_exc())
@@ -217,7 +168,6 @@ class KNXManager(Plugin):
 				type_cmd = message.data['command'] #type_cmd = "Write"
 				groups = message.data['address']
 				print groups
-				#groups = "adr_dmg:"+groups+" "
 				lignetest=""
 				valeur=message.data['value']
 				print "Message XPL %s" %message
@@ -232,25 +182,17 @@ class KNXManager(Plugin):
 	           
 	           #si wirte groups_cmd/si read, groups stat
 		if lignetest!="":
-			print "Write_Bus"
 			datatype=lignetest[lignetest.find('datatype:')+9:lignetest.find(' adr_dmg')]
 			cmdadr=lignetest[lignetest.find('adr_cmd:')+8:lignetest.find(' adr_stat')]
 			command=""
-			print "Command: |%s|" %type_cmd
-			print "Groups: |%s|" %cmdadr
-			print "datatype: |%s|" %datatype
-			print "valeur avant codage: |%s|" %valeur
 		
 		if type_cmd=="Write":
-			print("dmg Write %s") %type_cmd
 			valeur = message.data['value']
-			print "valeur avant modif:%s" %valeur
 			val=valeur
 			
 			value=encodeKNX(datatype, val)
 			data_type=value[0]
 			valeur=value[1]   
-			print "Valeur modifier |%s|" %valeur
 		
 		if data_type=="s":
 		 	command="groupswrite ip:%s %s %s" %(self.knx_host,cmdadr, valeur)
@@ -287,7 +229,6 @@ class KNXManager(Plugin):
 	def send_rep_ack(self, status, reason, cmd_id, dev_name):
 	        """ Send ACQ to a command via MQ
 	        """
-                print "send_rep_ack"
 	        self.log.info(u"==> Reply ACK to command id '%s' for device '%s'" % (cmd_id, dev_name))
 	        reply_msg = MQMessage()
 	        reply_msg.set_action('client.cmd.result')

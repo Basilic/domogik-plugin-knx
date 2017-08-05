@@ -483,18 +483,17 @@ class KNX:
 
 
     def listen(self, host, host_type):
+	command = "groupsocketlisten ip:%s" %host
 
         if host_type=="KNXTOOL":
-        	command = "knxtool groupsocketlisten ip:%s" %host
-        else:
-        	command = "groupsocketlisten ip:%s" %host
+        	command = "knxtool "+command
         self.pipe = subprocess.Popen(command,
                      shell = True,
                      bufsize = 1024,
                      stdout = subprocess.PIPE
                      ).stdout
         self._read = True   
-        print "Lancement du listen"                                                    
+	self.log.info('Open KNX pipe with command: |%s|' %command)
 
         while self._read:
             data = self.pipe.readline()
@@ -503,14 +502,6 @@ class KNX:
             self._callback(data)
 
     def get_stop(self):
-	print "Arret du listen"
         self.pipe.kill()
-        print("Arret du listen")
-        self._read = False
-	
-
-
-    
-       
-
-
+	self._read = False
+        self.log.info('Kill KNX pipe')
