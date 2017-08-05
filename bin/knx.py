@@ -45,6 +45,9 @@ import threading
 import subprocess
 
 listknx=[]
+sensors_list={}
+commands_list={}
+datapoint_list={}
 
 class KNXManager(Plugin):
     """ Implements a listener for KNX command messages 
@@ -54,70 +57,56 @@ class KNXManager(Plugin):
     def __init__(self):
         """ Create listener and launch bg listening
         """
-        Plugin.__init__(self,name='knx')
+      	# Declare the plugin name 
+	Plugin.__init__(self,name='knx')  
 
-# check if the plugin is configured. If not, this will stop the plugin and log an error
+	# check if the plugin is configured. If not, this will stop the plugin and log an error
         if not self.check_configured():
-            return  
+            return  #if plugin is not configured stop initialisation 
 
- 
-        # Configuration : KNX device
 
-        ### Create KNX object
+
 	knx_device = str(self.get_config('knx'))
-	self.knx_host = self.get_config('host_ip')
-	self.knx_host_type = self.get_config('host_type')
+	self.knx_host = self.get_config('host_ip') #get ip address of the daemon
+	self.knx_host_type = self.get_config('host_type') #get the type of daemon EIBD or KNXTOOL
 
-	self.device=self.get_device_list(quit_if_no_device = True)
+	self.device=self.get_device_list(quit_if_no_device = True) # get all device list
 
         self.knx = KNX(self.log, self.send_pub_data )
+
+	# start the listen of the bus
         try:
-            self.log.info("Start listening to KNX")
+            self.log.info("Try to start listening to KNX")
             knx_listen = threading.Thread(None,
-                                          self.knx.listen(self.knx_host,"KNXTOOL"),
+                                          self.knx.listen(self.knx_host,self.knx_host_type),
                                           "listen_knx",
                                           (),
-                                          {})
-            knx_listen.start()
-        except KNXException as err:
+                                          {}) #configure thread to listen
+            knx_listen.start() #start the thread
+        except KNXException as err: 
             self.log.error(err.value)
             self.force_leave()
             return
 
-
+# make 3 dictionary, first sensors_list make link between knx group and domogik sensor id
+# the second if datapoint_list, it make link between knx group and knx Datapoint type
+# the third is commands_list , it make link between domogik command id to knx group
+ 
 	for item in self.device:
-	 	log_message=""	
-		cmd_address=""
-	        print item	
-#		for cmd in item["xpl_commands"]:
-			#cmd_address=item["xpl_commands"][cmd]["parameters"][0]["value"]
-        	cmd_address=item["parameters"]["address_cmd"]["value"]
+		if item["parameters"]["address_stat"]["value"] != "":
+			sensors_list[item["parameters"]["address_stat"]["value"]]=item["sensors"]["state"]["id"]	
+			print datapoint_list.get(item["parameters"]["address_stat"]["value"],"Default")
+			if datapoint_list.get(item["parameters"]["address_stat"]["value"],"Default")=="Default":	
+				datapoint_list[item["parameters"]["address_stat"]["value"]]=item["parameters"]["Stat_Datapoint"]["value"]
 
-		sensor_address=""
-	#	for sensor in item["xpl_stats"]:
-		sensor_address=item["parameters"]["address_stat"]["value"]
-
-		if cmd_address != "" and sensor_address !="":
-			cmd_DT = item["parameters"]["Cmd_Datapoint"]["value"]
-			stat_DT = item["parameters"]["Stat_Datapoint"]["value"]
-		elif cmd_address != "" and sensor_address =="":
-                        log_message=log_message + "Sensor is null "
-		        self.log.info("No sensor for this device")	
-                        cmd_DT = item["parameters"]["Cmd_Datapoint"]["value"]
-			stat_DT = item["parameters"]["Cmd_Datapoint"]["value"]
-		elif sensor_address !=""and cmd_address =="":
-                        log_message=log_message + "Command is null "
-			print "Commande null"
-			cmd_DT = item["parameters"]["Stat_Datapoint"]["value"]
-			stat_DT = item["parameters"]["Stat_Datapoint"]["value"]
-		else:
-			cmd_DT = ""
-			stat_DT = ""
-
-		ligne= "datatype:"+ cmd_DT + " adr_dmg:"+ item["name"]+ " adr_cmd:"+ cmd_address + " adr_stat:"+ sensor_address +" dpt_stat:"+ stat_DT +"device_id:"
-		self.log.info ( log_message + ligne)
-		listknx.append(ligne)
-
+		if item["parameters"]["address_cmd"]["value"] != "":
+			commands_list[item["commands"]["switch"]["id"]]=item["parameters"]["address_cmd"]["value"]
+                        if datapoint_list.get(item["parameters"]["address_cmd"]["value"],"Default")=="Default":
+                                datapoint_list[item["parameters"]["address_cmd"]["value"]]=item["parameters"]["Cmd_Datapoint"]["value"]
+	
+	self.log.info('Sensor list: %s' %sensors_list)
+	self.log.info('Command List: %s' %commands_list)
+	self.log.info('Datapoint dict: %s' %datapoint_list)
 	self.log.info("Plugin ready :)")
 	self.ready()
 
@@ -218,12 +207,7 @@ class KNXManager(Plugin):
 
 
 	def on_mq_request(self, msg):
-		print "On MQ Resquest"	
 		Plugin.on_mdp_request(self,msg)
-		print "TESSSSSSSSSSSSSST"
-		message = msg
-		print message	
-#	    	print "Receive message %s" %message.type
 	    	command=""
 	    	print message
 	        if msg.get_action() == "client.cmd":        
