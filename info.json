@@ -6,9 +6,15 @@
 	        "tags": [],
 	        "dependencies": [
   		                 {
-				  "id": "EIBD",
-				  "type": "other"
-				  }
+				  "id": "EIBD or knxd",
+				  "type": "Daemon"
+				  },
+
+				{
+                                  "id": "KNXTOOL",
+                                  "type": "knxd"
+                                  }
+
 				 ],
 	        "description": "Manage KNX devices", 
 	        "domogik_min_version": "0.4.0",
