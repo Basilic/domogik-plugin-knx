@@ -9,7 +9,7 @@ This plugin is for KNX/EIB devices on domogik
 # Pre - Installation
 For Use this plugin you need to install a KNX daemon (EIBD or KNXD) you find help in the documentation section.
 
-#Documentation
+# Documentation
 You can find the documentation source in the docs/ folder. When the package will be installed, the documentation will be available in the Documentation menu of the Domogik administration for this package. 
 
 # Install the package
