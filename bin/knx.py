@@ -152,7 +152,8 @@ class KNXManager(Plugin):
 			data=msg.get_data()
 			self.log.info(data)
 			cmdadr = commands_list[data["command_id"]]
-			
+			reason = None
+			status = True
 			val= data['value']
 			
 			self.log.info(datapoint_list)
@@ -175,16 +176,21 @@ class KNXManager(Plugin):
 				subp=subprocess.Popen(command, shell=True)
 			else:
 				self.log.info("erreur command non définir, type cmd= %s" %type_cmd)
+				reason = "Command not define"
+				status = False
 
-#	def send_rep_ack(self, status, reason, cmd_id, dev_name):
-#		""" Send ACQ to a command via MQ
+			self.send_rep_ack(status, reason, command_id) ;
+
+
+	def send_rep_ack(self, status, reason, cmd_id):
+		""" Send ACQ to a command via MQ
 		"""
-		self.log.info(u"==> Reply ACK to command id '%s' for device '%s'" % (cmd_id, dev_name))
+		#self.log.info(u"==> Reply ACK to command id '%s' for device '%s'" % (cmd_id, dev_name))
 		reply_msg = MQMessage()
 		reply_msg.set_action('client.cmd.result')
 		reply_msg.add_data('status', status)
 		reply_msg.add_data('reason', reason)
 		self.reply(reply_msg.get())
-"""
+
 if __name__ == "__main__":
     INST = KNXManager()
