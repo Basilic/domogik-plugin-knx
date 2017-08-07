@@ -44,7 +44,6 @@ from domogikmq.message import MQMessage
 import threading
 import subprocess
 
-listknx=[]
 sensors_list={}
 commands_list={}
 datapoint_list={}
@@ -104,9 +103,34 @@ class KNXManager(Plugin):
 		self.log.info('Sensor list: %s' %sensors_list)
 		self.log.info('Command List: %s' %commands_list)
 		self.log.info('Datapoint dict: %s' %datapoint_list)
+		self.register_cb_update_devices(self.reload_devices)
 		self.log.info("Plugin ready :)")
 		
 		self.ready()
+
+	def reload_devices(self,devices):
+		sensors_list={}
+		commands_list={}
+		datapoint_list={}
+		self.device=self.get_device_list(quit_if_no_device = True) 
+		for item in self.device:
+			if item["parameters"]["address_stat"]["value"] != "":
+				sensors_list[item["parameters"]["address_stat"]["value"]]=item["sensors"]["state"]["id"]
+				if datapoint_list.get(item["parameters"]["address_stat"]["value"],"Default")=="Default":
+					datapoint_list[item["parameters"]["address_stat"]["value"]]=item["parameters"]["Stat_Datapoint"]["value"]
+				else:
+					if item["parameters"]["address_cmd"]["value"] != "":
+						sensors_list[item["parameters"]["address_cmd"]["value"]]=item["sensors"]["state"]["id"]
+
+			if item["parameters"]["address_cmd"]["value"] != "":
+				commands_list[item["commands"]["switch"]["id"]]=item["parameters"]["address_cmd"]["value"]
+				if datapoint_list.get(item["parameters"]["address_cmd"]["value"],"Default")=="Default":
+					datapoint_list[item["parameters"]["address_cmd"]["value"]]=item["parameters"]["Cmd_Datapoint"]["value"]
+		        
+		self.log.info('Sensor list: %s' %sensors_list)
+		self.log.info('Command List: %s' %commands_list)
+		self.log.info('Datapoint dict: %s' %datapoint_list)
+
 
 	def send_pub_data(self, data):
 		""" Send message on MQ when a message is detect by the knx pipe
@@ -148,7 +172,7 @@ class KNXManager(Plugin):
 	def on_mdp_request(self, msg):
 		Plugin.on_mdp_request(self,msg)
 		command=""
-
+		self.log.info("Test: %s" %msg)
 		if msg.get_action() == "client.cmd":        
 			data=msg.get_data()
 			self.log.info(data)
@@ -181,6 +205,7 @@ class KNXManager(Plugin):
 				status = False
 
 			self.send_rep_ack(status, reason, command_id) ;
+		   
 
 
 	def send_rep_ack(self, status, reason, cmd_id):
