@@ -50,6 +50,7 @@ commands_list={}
 datapoint_list={}
 
 class KNXManager(Plugin):
+	
 	def __init__(self):
 		""" Implements a listener for KNX command messages 
 			and launch background listening for KNX events
@@ -143,74 +144,40 @@ class KNXManager(Plugin):
 					self.log.info(" Error to send MQ")
 					return False, None
 
-	def on_mq_request(self, msg):
+	def on_mdp_request(self, msg):
 		Plugin.on_mdp_request(self,msg)
 		command=""
-		print message
-		if msg.get_action() == "client.cmd":        
-			valeur=data["value"] 
-			command="knxtool groupswrite ip:%s 1/1/4 %s" %(self.knx_host,valeur)
-			try:
-				type_cmd = message.data['command'] #type_cmd = "Write"
-				groups = message.data['address']
-				print groups
-				lignetest=""
-				valeur=message.data['value']
-				print "Message XPL %s" %message
-				for i in range(len(listknx)):
-					if listknx[i].find(groups)>=0:
-						lignetest=listknx[i]
-						break
-				print "ligne test=|%s|" %lignetest
-			except Exception, e:
-				lignetest=""
-			   #si wirte groups_cmd/si read, groups stat
-			if lignetest!="":
-				datatype=lignetest[lignetest.find('datatype:')+9:lignetest.find(' adr_dmg')]
-				cmdadr=lignetest[lignetest.find('adr_cmd:')+8:lignetest.find(' adr_stat')]
-				command=""
-			
-			if type_cmd=="Write":
-				valeur = message.data['value']
-				val=valeur
 
-				value=encodeKNX(datatype, val)
-				data_type=value[0]
-				valeur=value[1]   
+		if msg.get_action() == "client.cmd":        
+			data=msg.get_data()
+			self.log.info(data)
+			cmdadr = commands_list[data["command_id"]]
+			
+			val= data['value']
+			
+			self.log.info(datapoint_list)
+			command_id = data['device_id']
+			datatype = datapoint_list[cmdadr]
+			value=encodeKNX(datatype, val)
+			data_type=value[0]
+			valeur=value[1]   
 			
 			if data_type=="s":
 				command="groupswrite ip:%s %s %s" %(self.knx_host,cmdadr, valeur)
+				if self.knx_host_type == "KNXTOOL":
+					command = "knxtool " + command
 			  
 			if data_type=="l":
 				command="groupwrite ip:%s %s %s" %(self.knx_host,cmdadr, valeur)
-
-			
-			if type_cmd == "Read":
-				print("dmg Read")
-				command="groupread ip:%s %s" %(self.knx_host,cmdadr)
-			
-			if type_cmd == "Response":
-				print("dmg Response")
-				data_type=message.data['type']
-				valeur = message.data['value']
-
-			if data_type=="s":
-				command="groupsresponse ip:%s %s %s" %(self.knx_host,cmdadr,valeur)
-
-			if data_type=="l":
-				command="groupresponse ip:%s %s %s" %(self.knx_host,cmdadr,valeur)
-			
-			if command!="":
 				if self.knx_host_type == "KNXTOOL":
-					command= "knxtool %s" %command
-				print "envoie de la command %s" %command
+					command = "knxtool " + command
+			if command != "":
 				subp=subprocess.Popen(command, shell=True)
+			else:
+				self.log.info("erreur command non définir, type cmd= %s" %type_cmd)
 
-			if command=="":
-				print("erreur command non définir, type cmd= %s" %type_cmd)
-
-	def send_rep_ack(self, status, reason, cmd_id, dev_name):
-		""" Send ACQ to a command via MQ
+#	def send_rep_ack(self, status, reason, cmd_id, dev_name):
+#		""" Send ACQ to a command via MQ
 		"""
 		self.log.info(u"==> Reply ACK to command id '%s' for device '%s'" % (cmd_id, dev_name))
 		reply_msg = MQMessage()
@@ -218,6 +185,6 @@ class KNXManager(Plugin):
 		reply_msg.add_data('status', status)
 		reply_msg.add_data('reason', reason)
 		self.reply(reply_msg.get())
-
+"""
 if __name__ == "__main__":
     INST = KNXManager()
