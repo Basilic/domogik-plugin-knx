@@ -476,33 +476,29 @@ class KNXException(Exception):
 
 class KNX:
    
-    def __init__(self, log, callback):
-        self._log = log
-        self._callback = callback
-        self._ser = None
+	def __init__(self, log, callback):
+		self._log = log
+		self._callback = callback
+		self._ser = None
 
-
-    def listen(self, host, host_type):
-
-	command = "groupsocketlisten ip:%s" %host
-
-        if host_type=="KNXTOOL":
-        	command = "knxtool "+command
-        self.pipe = subprocess.Popen(command,
+	def listen(self):
+		command = "knxtool groupsocketlisten ip:127.0.0.1"
+		self.pipe = subprocess.Popen(command,
                      shell = True,
                      bufsize = 1024,
                      stdout = subprocess.PIPE
                      ).stdout
-        self._read = True   
-	print 'Open KNX pipe with command: |%s|' %command
+		self._read = True   
+		self._log.info('Lancement du listen')
 
-        while self._read:
-            data = self.pipe.readline()
-            if not data:
-                break
-            self._callback(data)
+		while self._read:
+			data = self.pipe.readline()
+			if not data:
+				break
+			self._callback(data)
 
-    def get_stop(self):
-        self.pipe.kill()
-	self._read = False
-#        self.log.info('Kill KNX pipe')
+
+	def get_stop(self):
+		self.pipe.kill()
+		self._read = False
+
