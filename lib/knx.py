@@ -476,13 +476,18 @@ class KNXException(Exception):
 
 class KNX:
    
-	def __init__(self, log, callback):
+	def __init__(self, log, callback, host, host_type):
 		self._log = log
+		self._host_ip = host
+		self._host_type = host_type
 		self._callback = callback
 		self._ser = None
 
 	def listen(self):
-		command = "knxtool groupsocketlisten ip:127.0.0.1"
+		command = "groupsocketlisten ip:%s" %self._host_ip
+		if self._host_type == "KNXTOOL":
+			command = "knxtool " + command
+		self._log.info('Command: %s' %command)
 		self.pipe = subprocess.Popen(command,
                      shell = True,
                      bufsize = 1024,

@@ -67,11 +67,11 @@ class KNXManager(Plugin):
 		knx_cache = self.get_config('knx')
 		self.knx_host = self.get_config('host_ip') #get ip address of the daemon
 		self.knx_host_type = self.get_config('host_type') #get the type of daemon EIBD or KNXTOOL
-		self.log.info('Host ip: %s' %self.knx_host)
-		self.log.info('Host type: %s' %self.knx_host_type)
+		self.log.info('Host ip: |%s|' %self.knx_host)
+		self.log.info('Host type: |%s|' %self.knx_host_type)
 		self.device=self.get_device_list(quit_if_no_device = True) # get all device list
 		
-		self.knx = KNX(self.log, self.send_pub_data)
+		self.knx = KNX(self.log, self.send_pub_data, self.knx_host, self.knx_host_type)
 		try:
 			self.log.info("Start listening to KNX")
 			knx_listen = threading.Thread(None,
