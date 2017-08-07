@@ -75,12 +75,13 @@ class KNXManager(Plugin):
 		self.knx = KNX(self.log, self.send_pub_data, self.knx_host, self.knx_host_type)
 		try:
 			self.log.info("Start listening to KNX")
-			knx_listen = threading.Thread(None,
+			self.knx_listen = threading.Thread(None,
                                           self.knx.listen,
                                           "listen_knx",
                                           (),
                                           {})
-			knx_listen.start()
+			self.knx_listen.start()
+			self.register_thread(self.knx_listen)
 		except KNXException as err:
 			self.log.error(err.value)
 			self.force_leave()
