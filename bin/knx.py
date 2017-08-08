@@ -99,7 +99,7 @@ class KNXManager(Plugin):
 				commands_list[item["commands"]["switch"]["id"]]=item["parameters"]["address_cmd"]["value"]
 				if datapoint_list.get(item["parameters"]["address_cmd"]["value"],"Default")=="Default":
 					datapoint_list[item["parameters"]["address_cmd"]["value"]]=item["parameters"]["Cmd_Datapoint"]["value"]
-        
+       		self.read_sensors() 
 		self.log.info('Sensor list: %s' %sensors_list)
 		self.log.info('Command List: %s' %commands_list)
 		self.log.info('Datapoint dict: %s' %datapoint_list)
@@ -131,13 +131,19 @@ class KNXManager(Plugin):
 		self.log.info('Command List: %s' %commands_list)
 		self.log.info('Datapoint dict: %s' %datapoint_list)
 
-
+	def read_sensors(self):
+		for sensor in sensors_list:
+			command = "groupread ip:%s %s" %(self.knx_host, sensor)
+			if self.knx_host_type == "KNXTOOL":
+				command ="knxtool " + command 
+			subp=subprocess.Popen(command, shell=True)
+	
 	def send_pub_data(self, data):
 		""" Send message on MQ when a message is detect by the knx pipe
 		"""
 		### Identify the sender of the message
 		self.log.info("Receive knx message from pipe")
-
+		self.log.info(data)
 		#identification of the sender
 		sender = data[data.find('from')+4:data.find('to')-1].strip()
 		groups = 'None'
@@ -153,7 +159,7 @@ class KNXManager(Plugin):
 			i=0
 			lignetest=""
 			self.log.info(sensors_list.get(groups,"Default"))
-			if sensors_list.get(groups,"Default")!="Default":
+			if sensors_list.get(groups,"Default")!="Default" and (command == "Writ" or command == "Resp"):
 				sensor_id=sensors_list[groups]
 				datatype=datapoint_list[groups]
 				val=data[data.find(':')+1:-1]
