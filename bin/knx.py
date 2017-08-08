@@ -130,6 +130,7 @@ class KNXManager(Plugin):
 		self.log.info('Sensor list: %s' %sensors_list)
 		self.log.info('Command List: %s' %commands_list)
 		self.log.info('Datapoint dict: %s' %datapoint_list)
+		self.read_sensors()
 
 	def read_sensors(self):
 		for sensor in sensors_list:
