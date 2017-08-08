@@ -4,9 +4,20 @@
 #
 # Template version : 1
 
+sudo: required
+
 language: python
 python:
   - "2.7"
+  
+services:
+  - docker 
+script:
+  - wget -O- http://travis.debian.net/script.sh | sh -
+  
+branches:
+  except:
+    - /^debian\/\d/
 mysql:
   adapter: mysql2
   database: domogik
@@ -14,7 +25,7 @@ mysql:
   encoding: utf8
 env:
   DMG_BRANCH=develop
-  DMG_PLUGIN=mirror
+  DMG_PLUGIN=knx
 install:
   - cd ~
   - git clone https://github.com/domogik/domogik.git
