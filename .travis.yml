@@ -11,10 +11,7 @@ python:
   - "2.7"
   
 services:
-  - docker 
-script:
-  - wget -O- http://travis.debian.net/script.sh | sh -
-  
+  - docker   
 branches:
   except:
     - /^debian\/\d/
@@ -33,6 +30,7 @@ install:
   - git checkout $DMG_BRANCH
   - ~/domogik/src/domogik/tests/travis/travis-install-dependencies.sh
 before_script:
+  - wget -O- http://travis.debian.net/script.sh | sh -
   - ~/domogik/src/domogik/tests/travis/travis-setup-database.sh
   - ~/domogik/src/domogik/tests/travis/travis-install-domogik-mq.sh
   - ~/domogik/src/domogik/tests/travis/travis-install-domogik.sh
