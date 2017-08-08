@@ -13,7 +13,7 @@ python:
 mysql:
   adapter: mysql2
   database: domogik
-  username: travis
+  username: root
   encoding: utf8
 env:
   DMG_BRANCH=develop
