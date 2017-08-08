@@ -20,7 +20,7 @@
 	        "domogik_min_version": "0.4.0",
 	        "name": "knx",
 	        "type": "plugin",
-	        "version": "0.4"
+	        "version": "1.0"
 	    },
 
   "configuration": [

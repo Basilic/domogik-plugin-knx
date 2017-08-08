@@ -1,0 +1,36 @@
+
+================
+Daemon
+================
+
+knxd
+------
+
+# Do not use "sudo" unless told to do so.
+# If "dpkg-buildpackage" complains about missing packages
+# ("Unmet build dependencies"): install them
+# (apt-get install …) and try that step again.
+# If it wants "x | y", try just x; install y if that doesn't work.
+# Also, if it complains about conflicting packages, remove them (duh).
+
+# first, install build tools and get the source code
+sudo apt-get install git-core build-essential
+git clone https://github.com/knxd/knxd.git
+
+# now build+install knxd
+cd knxd
+git checkout master
+dpkg-buildpackage -b -uc
+# To repeat: if this fails because of missing dependencies,
+# fix them instead of using dpkg-buildpackage's "-d" option.
+cd ..
+sudo dpkg -i knxd_*.deb knxd-tools_*.deb
+
+# … and if you'd like to update knxd:
+rm knxd*.deb
+cd knxd
+git pull
+dpkg-buildpackage -b -uc
+cd ..
+sudo dpkg -i knxd_*.deb knxd-tools_*.deb
+

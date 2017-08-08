@@ -1,2 +1,17 @@
-0.4
+=========
+Changelog
+=========
 
+1.0
+===
+
+* Plugin using MQ
+* Add choice between EIBD and knxd as daemon
+* Add Choice your deamon ip
+* Add a reload device after update
+* Add a read all sensors routine
+* Fix stop problem
+
+0.4
+===
+* Plugin xpl using EIBD only

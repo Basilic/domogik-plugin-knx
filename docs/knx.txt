@@ -1,0 +1,67 @@
+.. _index:
+
+===============
+Plugin KNX
+===============
+
+Purpose
+=======
+The KNX plugin i used to received and send message on a KNX bus.
+
+This is a "No xPL" version
+
+Plugin Information Page
+-----------------------
+
+Dependencies
+============
+
+The plugin need a a daemon and tools, you can use EIBD of knxd with knxtool.
+
+Plugin configuration
+====================
+
+Here is the global configuration:
+---------------------------------
+
+===================== =========================== ======================================================================
+Key                   Type                        Description
+===================== =========================== ======================================================================
+Host ip               string                      The hostnmae/@Ip of daemon server
+--------------------- --------------------------- ----------------------------------------------------------------------
+Host Type             string                      Specify if you use EIBD of KNXTOOL
+===================== =========================== ======================================================================
+
+Create the domogik devices
+==========================
+
+Create device by device type
+----------------------------
+
+There is different devices type for sensors (boolean, scale, number...) and for commands (Switch, Scale...)
+
+In all cases two parameters are needed for a domogik device creation:
+
+===================== =========================== ======================================================================
+Key                   Type                        Description
+===================== =========================== ======================================================================
+datapoint             string                      Use the list to choice your KNX datapoint type
+--------------------- --------------------------- ----------------------------------------------------------------------
+address               string                      The KNX address group that you would configure
+===================== =========================== ======================================================================
+
+That rigth for sensors or commands if a command was created without sensors by default the plugin use the commands groups as sensors groups.
+
+Here are some screenshots of devices type creation
+--------------------------------------------------
+
+Start the plugin
+================
+
+You can now start the plugin (start button) and use the created devices.
+
+Set up your widgets on the user interface
+=========================================
+
+You can now place the widgets of your devices features on the user interface.
+

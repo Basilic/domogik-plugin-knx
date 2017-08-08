@@ -1,9 +1,13 @@
-.. _index:
+.. _toc:
 
 ================
 Table of content
 ================
 
-* :doc:`Daemon Installation </Daemon>
-* :doc:`Plugin documentation </knx>`
-* :doc:`Helpers documentation </helpers>`
+.. toctree::
+
+	/daemon
+	/knx
+	/helpers
+	/changelog
+
