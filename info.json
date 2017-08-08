@@ -42,22 +42,6 @@
 			}
 ],
   "device_types": {
-  		"knxplugin.Number":{
-					"id" :"knxplugin.Number",
-					"description":"Number sensor",
-					"name":"Number",	
-					"commands":[],
-					"sensors":["number_state"],
-					"parameters":[
-							{
-							"key":"Stat_Datapoint",
-							"description":"the KNX datapoint type for stat",
-							"type":"choice",
-"choices":{"6.xxx":"6.xxx-8bits signed Integer (EIS14)","7.xxx": "7.xxx-16bits unsigned integer (EIS14)","8.xxx":"8.xxx-16bit signed integer (EIS14)","9.xxx":"9.xxx-16bit unsigned integer (EIS14)","12.xxx": "12.xxx-32 bit unsigned interger","13.xxx":"13.xxx-32bit signed integer", "14.xxx":"14.xxx-32bit IEEE 754 floating point number"},
-							"xpl":false
-							}
-						    ]
-				 },
   		  "knxplugin.switch":{
 					"id" :"knxplugin.switch",
 					"description":"ON/OFF function",
@@ -93,6 +77,29 @@
 					                }
 						    ]
 				 },		 
+  		"knxplugin.Number":{
+					"id" :"knxplugin.Number",
+					"description":"Number sensor",
+					"name":"Number",	
+					"commands":[],
+					"sensors":["number_state"],
+					"parameters":[
+							{
+							"key":"Stat_Datapoint",
+							"description":"the KNX datapoint type for stat",
+							"type":"choice",
+"choices":{"6.xxx":"6.xxx-8bits signed Integer (EIS14)","7.xxx": "7.xxx-16bits unsigned integer (EIS14)","8.xxx":"8.xxx-16bit signed integer (EIS14)","9.xxx":"9.xxx-16bit unsigned integer (EIS14)","12.xxx": "12.xxx-32 bit unsigned interger","13.xxx":"13.xxx-32bit signed integer", "14.xxx":"14.xxx-32bit IEEE 754 floating point number"},
+							"xpl":false
+							},
+							{
+							"key": "address_stat",
+							"description": "The stats address",
+							"type": "string",
+							"xpl":false
+							}
+						    ]
+				 },
+				 
   		  "knxplugin.scale":{
 					"id" :"knxplugin.scale",
 					"description":"scale function",
@@ -108,10 +115,22 @@
 							"xpl":false
 							},
 							{
+					        "key": "address_cmd",
+							"description": "The command address",
+							"type": "string",
+							"xpl":false
+							},
+							{
 							"key":"Stat_Datapoint",
 							"description":"the KNX datapoint type for stat",
 							"type":"choice",
 							"choices":{"5.001":"5.001-Scaling"},
+							"xpl":false
+							},
+							{
+							"key": "address_stat",
+							"description": "The stats address",
+							"type": "string",
 							"xpl":false
 							}
 						    ]

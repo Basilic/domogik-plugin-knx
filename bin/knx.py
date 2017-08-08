@@ -87,16 +87,19 @@ class KNXManager(Plugin):
 			return
 
 		for item in self.device:
+			self.log.info(item)
 			if item["parameters"]["address_stat"]["value"] != "":
-				sensors_list[item["parameters"]["address_stat"]["value"]]=item["sensors"]["state"]["id"]
-				if datapoint_list.get(item["parameters"]["address_stat"]["value"],"Default")=="Default":
-					datapoint_list[item["parameters"]["address_stat"]["value"]]=item["parameters"]["Stat_Datapoint"]["value"]
-				else:
-					if item["parameters"]["address_cmd"]["value"] != "":
-						sensors_list[item["parameters"]["address_cmd"]["value"]]=item["sensors"]["state"]["id"]
+				for sensor in item["sensors"]:
+					sensors_list[item["parameters"]["address_stat"]["value"]]=item["sensors"][sensor]["id"]
+					if datapoint_list.get(item["parameters"]["address_stat"]["value"],"Default")=="Default":
+						datapoint_list[item["parameters"]["address_stat"]["value"]]=item["parameters"]["Stat_Datapoint"]["value"]
+					else:
+						if item["parameters"]["address_cmd"]["value"] != "":
+							sensors_list[item["parameters"]["address_cmd"]["value"]]=item["sensors"]["state"]["id"]
 
 			if item["parameters"]["address_cmd"]["value"] != "":
-				commands_list[item["commands"]["switch"]["id"]]=item["parameters"]["address_cmd"]["value"]
+				for command in item["commands"]:
+					commands_list[item["commands"][command]["id"]]=item["parameters"]["address_cmd"]["value"]
 				if datapoint_list.get(item["parameters"]["address_cmd"]["value"],"Default")=="Default":
 					datapoint_list[item["parameters"]["address_cmd"]["value"]]=item["parameters"]["Cmd_Datapoint"]["value"]
        		self.read_sensors() 
@@ -108,7 +111,10 @@ class KNXManager(Plugin):
 		
 		self.ready()
 
+
 	def reload_devices(self,devices):
+		""" Routine call when the devices list is updated
+		"""
 		sensors_list={}
 		commands_list={}
 		datapoint_list={}
@@ -133,6 +139,8 @@ class KNXManager(Plugin):
 		self.read_sensors()
 
 	def read_sensors(self):
+		""" Routine call to read all sensors on the bus
+		"""
 		for sensor in sensors_list:
 			command = "groupread ip:%s %s" %(self.knx_host, sensor)
 			if self.knx_host_type == "KNXTOOL":
@@ -177,6 +185,8 @@ class KNXManager(Plugin):
 					return False, None
 
 	def on_mdp_request(self, msg):
+		""" Routine call when a MQ message arrive
+		"""
 		Plugin.on_mdp_request(self,msg)
 		command=""
 		self.log.info("Test: %s" %msg)
@@ -213,8 +223,6 @@ class KNXManager(Plugin):
 
 			self.send_rep_ack(status, reason, command_id) ;
 		   
-
-
 	def send_rep_ack(self, status, reason, cmd_id):
 		""" Send ACQ to a command via MQ
 		"""
