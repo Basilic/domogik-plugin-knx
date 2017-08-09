@@ -4,7 +4,14 @@ Daemon
 ================
 
 knxd
-------
+====
+
+knxd is an advanced router/gateway which runs on any Linux computer; it can talk to all known KNX interfaces.
+
+This code is a fork of eibd 0.0.5
+
+Installation:
+-------------
 
 # Do not use "sudo" unless told to do so.
 # If "dpkg-buildpackage" complains about missing packages
@@ -34,3 +41,51 @@ dpkg-buildpackage -b -uc
 cd ..
 sudo dpkg -i knxd_*.deb knxd-tools_*.deb
 
+Configuration:
+--------------
+The configuration file is /etc/knxd.conf
+
+An exemple of configuration using a gateway with ip 192.168.1.1 is:
+
+KNXD_OPTS="-e 0.0.1 -E 0.0.2:9 -D -T -S -b ipt:192.168.1.1"
+
+EIBD
+====
+
+EIBD it's not longer supported but it's working fine on my debian 8.7
+
+Installation:
+-------------
+
+Run in shell command:
+
+wget http://downloads.sourceforge.net/sourceforge/bcusdk/pthsem_2.0.8.tar.gz
+tar -xzf pthsem_2.0.8.tar.gz
+cd pthsem-2.0.8/
+./configure
+make
+sudo make install
+cd ..
+
+wget http://downloads.sourceforge.net/sourceforge/project/bcusdk/bcusdk/bcusdk_0.0.5.tar.gz
+tar -xzf bcusdk_0.0.5.tar.gz
+cd bcusdk-0.0.5/
+export LD_LIBRARY_PATH=/usr/local/lib
+./configure --enable-onlyeibd --enable-eibnetiptunnel --enable-eibnetipserver --enable-ft12
+make
+sudo make install
+cd ..
+
+sudo ln -s /usr/local/lib/libeibclient.so.0 /usr/lib/libeibclient.so.0
+sudo ln -s /usr/local/lib/libeibclient.so.0 /lib/libeibclient.so.0
+sudo ln -s /usr/local/lib/libpthsem.so.20 /usr/lib/libpthsem.so.20
+sudo ln -s /usr/local/lib/libpthsem.so.20 /lib/libpthsem.so.20
+
+Configuration:
+--------------
+
+The configuration file is /etc/knxd.conf
+
+An exemple of configuration using a gateway with ip 192.168.1.1 is:
+
+KNXD_OPTS="-e 0.0.1 -E 0.0.2:9 -D -T -S -b ipt:192.168.1.1"
