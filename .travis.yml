@@ -4,16 +4,13 @@
 #
 # Template version : 1
 
-sudo: required
-dist: trusty
 language: python
 python:
   - "2.7"
- 
 mysql:
   adapter: mysql2
   database: domogik
-  username: root
+  username: travis
   encoding: utf8
 env:
   DMG_BRANCH=develop
@@ -39,4 +36,4 @@ after_script:
 notifications:
   irc: "irc.freenode.net#domogik"
   on_success: never
-  on_failure: always
+#  on_failure: always
