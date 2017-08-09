@@ -1,213 +1,328 @@
 {
-  "json_version": 2,
-  "identity": {
-	        "author": "Basilic",
-       		"author_email": "Basilic3 at hotmail.com",
-	        "tags": [],
-	        "dependencies": [
-  		                 {
-				  "id": "EIBD or knxd",
-				  "type": "Daemon"
-				  },
-
-				{
-                                  "id": "KNXTOOL",
-                                  "type": "knxd"
-                                  }
-
-				 ],
-	        "description": "Manage KNX devices", 
-	        "domogik_min_version": "0.4.0",
-	        "name": "knx",
-	        "type": "plugin",
-	        "version": "1.0"
-	    },
-
-  "configuration": [
-			{
-                        "default": "KNXTOOL",
-                        "description":"",
-                        "required": true,
-			"key": "host_type",
-                        "name": "EIBD or KNXTOOL only",
-                        "type": "string"
+	"json_version": 2,
+	"identity": {
+		"author": "Basilic",
+		"author_email": "Basilic3 at hotmail.com",
+		"tags": ["knxd", "eibd", "knx","domotique"],
+		"dependencies": [{
+				"id": "EIBD or knxd",
+				"type": "Daemon"
 			},
+
 			{
-                        "default": "127.0.0.1",
-                        "description":"",
-                        "required": true,
-			"key": "host_ip",
-                        "name": "IP address for the daemon",
-                        "type": "string"
+				"id": "KNXTOOL",
+				"type": "if knxd"
 			}
-],
-  "device_types": {
-  		  "knxplugin.switch":{
-					"id" :"knxplugin.switch",
-					"description":"ON/OFF function",
-					"name":"Switch",	
-					"commands":["switch"],
-					"sensors":["state"],
-					"parameters":[
-							{
-							"key":"Cmd_Datapoint",
-							"description":"the KNX datapoint type for command",
-							"type":"choice",
-							"choices":{"1.001":"1.001-Switch"},
-							"xpl":false
-							},
-					               {
-					                "key": "address_cmd",
-					                "description": "The command address",
-					                "type": "string",
-                                                        "xpl":false
-					                },
-							{
-							"key":"Stat_Datapoint",
-							"description":"the KNX datapoint type for stat",
-							"type":"choice",
-							"choices":{"1.001":"1.001-Switch"},
-							"xpl":false
-							},
-                                                        {
-       						        "key": "address_stat",
-					                "description": "The stats address",
-					                "type": "string",
-                                                        "xpl":false
-					                }
-						    ]
-				 },		 
-  		"knxplugin.Number":{
-					"id" :"knxplugin.Number",
-					"description":"Number sensor",
-					"name":"Number",	
-					"commands":[],
-					"sensors":["number_state"],
-					"parameters":[
-							{
-							"key":"Stat_Datapoint",
-							"description":"the KNX datapoint type for stat",
-							"type":"choice",
-"choices":{"6.xxx":"6.xxx-8bits signed Integer (EIS14)","7.xxx": "7.xxx-16bits unsigned integer (EIS14)","8.xxx":"8.xxx-16bit signed integer (EIS14)","9.xxx":"9.xxx-16bit unsigned integer (EIS14)","12.xxx": "12.xxx-32 bit unsigned interger","13.xxx":"13.xxx-32bit signed integer", "14.xxx":"14.xxx-32bit IEEE 754 floating point number"},
-							"xpl":false
-							},
-							{
-							"key": "address_stat",
-							"description": "The stats address",
-							"type": "string",
-							"xpl":false
-							}
-						    ]
-				 },
-				 
-  		  "knxplugin.scale":{
-					"id" :"knxplugin.scale",
-					"description":"scale function",
-					"name":"Scale",	
-					"commands":["scale"],
-					"sensors":["scale_state"],
-					"parameters":[
-							{
-							"key":"Cmd_Datapoint",
-							"description":"the KNX datapoint type for command",
-							"type":"choice",
-							"choices":{"5.001":"5.001-Scaling"},
-							"xpl":false
-							},
-							{
-					        "key": "address_cmd",
-							"description": "The command address",
-							"type": "string",
-							"xpl":false
-							},
-							{
-							"key":"Stat_Datapoint",
-							"description":"the KNX datapoint type for stat",
-							"type":"choice",
-							"choices":{"5.001":"5.001-Scaling"},
-							"xpl":false
-							},
-							{
-							"key": "address_stat",
-							"description": "The stats address",
-							"type": "string",
-							"xpl":false
-							}
-						    ]
-				 }
+
+		],
+		"description": "Manage KNX devices",
+		"domogik_min_version": "0.4.0",
+		"name": "knx",
+		"type": "plugin",
+		"version": "1.01"
+	},
+
+	"configuration": [{
+			"default": "KNXTOOL",
+			"description": "",
+			"required": true,
+			"key": "host_type",
+			"name": "EIBD or KNXTOOL only",
+			"type": "string"
 		},
-"commands": {
-    "switch": {
-        "name": "switch",
-        "return_confirmation": true,
-        "parameters": [
-            {
-                "key": "value",
-                "data_type": "DT_Switch",
-                "conversion": ""
-            }
-        ]
-    },
+		{
+			"default": "127.0.0.1",
+			"description": "",
+			"required": true,
+			"key": "host_ip",
+			"name": "IP address for the daemon",
+			"type": "string"
+		}
+	],
+	"device_types": {
+		"knxplugin.switch": {
+			"id": "knxplugin.switch",
+			"description": "ON/OFF function",
+			"name": "Switch",
+			"commands": ["switch"],
+			"sensors": ["state"],
+			"parameters": [{
+					"key": "Cmd_Datapoint",
+					"description": "the KNX datapoint type for command",
+					"type": "choice",
+					"choices": {
+						"1.001": "1.001-Switch"
+					},
+					"xpl": false
+				},
+				{
+					"key": "address_cmd",
+					"description": "The command address",
+					"type": "string",
+					"xpl": false
+				},
+				{
+					"key": "Stat_Datapoint",
+					"description": "the KNX datapoint type for stat",
+					"type": "choice",
+					"choices": {
+						"1.001": "1.001-Switch"
+					},
+					"xpl": false
+				},
+				{
+					"key": "address_stat",
+					"description": "The stats address",
+					"type": "string",
+					"xpl": false
+				}
+			]
+		},
+		"knxplugin.shutter": {
+			"id": "knxplugin.shutter",
+			"description": "Up/Down function",
+			"name": "Shutter Up/Down",
+			"commands": ["UpDown"],
+			"sensors": ["state_UpDown"],
+			"parameters": [{
+					"key": "Cmd_Datapoint",
+					"description": "the KNX datapoint type for command",
+					"type": "choice",
+					"choices": {
+						"1.008": "1.008-Shutter"
+					},
+					"xpl": false
+				},
+				{
+					"key": "address_cmd",
+					"description": "The command address",
+					"type": "string",
+					"xpl": false
+				},
+				{
+					"key": "Stat_Datapoint",
+					"description": "the KNX datapoint type for stat",
+					"type": "choice",
+					"choices": {
+						"1.008": "1.008-Shutter"
+					},
+					"xpl": false
+				},
+				{
+					"key": "address_stat",
+					"description": "The stats address",
+					"type": "string",
+					"xpl": false
+				}
+			]
+		},
+		"knxplugin.Boolean": {
+			"id": "knxplugin.Boolean",
+			"description": "Boolean sensor",
+			"name": "Sensor Boolean",
+			"commands": [],
+			"sensors": ["state"],
+			"parameters": [{
+					"key": "Stat_Datapoint",
+					"description": "the KNX datapoint type for stat",
+					"type": "choice",
+					"choices": {
+						"1.001": "1.001-Bollean"
+					},
+					"xpl": false
+				},
+				{
+					"key": "address_stat",
+					"description": "The stats address",
+					"type": "string",
+					"xpl": false
+				}
+			]
+		},
 
- "scale": {
-        "name": "scale",
-        "return_confirmation": true,
-        "parameters": [
-            {
-                "key": "value",
-                "data_type": "DT_Scaling",
-                "conversion": ""
-            }
-        ]
-    }
-},
-"xpl_commands": {
-},
+		"knxplugin.Number": {
+			"id": "knxplugin.Number",
+			"description": "Number sensor",
+			"name": "Sensor Number",
+			"commands": [],
+			"sensors": ["number_state"],
+			"parameters": [{
+					"key": "Stat_Datapoint",
+					"description": "the KNX datapoint type for stat",
+					"type": "choice",
+					"choices": {
+						"6.xxx": "6.xxx-8bits signed Integer (EIS14)",
+						"7.xxx": "7.xxx-16bits unsigned integer (EIS14)",
+						"8.xxx": "8.xxx-16bit signed integer (EIS14)",
+						"9.xxx": "9.xxx-16bit unsigned integer (EIS14)",
+						"12.xxx": "12.xxx-32 bit unsigned interger",
+						"13.xxx": "13.xxx-32bit signed integer",
+						"14.xxx": "14.xxx-32bit IEEE 754 floating point number"
+					},
+					"xpl": false
+				},
+				{
+					"key": "address_stat",
+					"description": "The stats address",
+					"type": "string",
+					"xpl": false
+				}
+			]
+		},
 
-"xpl_stats": {
-},
-"sensors": {
-    "state": {
-        "name": "state",
-        "data_type": "DT_Switch",
-        "conversion": "",
-        "incremental": false,
-	"timeout": 0,
-        "history": {
-            "store": true,
-            "duplicate": false,
-            "max": 0,
-            "expire": 0,
-            "round_value": 0
-        }
-    },
-"scale_state": {
-        "name": "state",
-        "data_type": "DT_Scaling",
-        "conversion": "",
-        "incremental": false,
-	"timeout": 0,
-        "history": {
-            "store": true,
-            "duplicate": false,
-            "max": 0,
-            "expire": 0,
-            "round_value": 0
-        }
-    },
-"number_state": {
-        "name": "state",
-        "data_type": "DT_Number",
-        "conversion": "",
-        "incremental": false,
-	"timeout": 0,
-        "history": {
-            "store": true,
-            "duplicate": false,
-            "max": 0,
-            "expire": 0,
-            "round_value": 0
-        }
-    }
-}
+		"knxplugin.percent": {
+			"id": "knxplugin.percent",
+			"description": "scale function",
+			"name": "Sensor in percent",
+			"commands": [],
+			"sensors": ["scale_state"],
+			"parameters": [{
+					"key": "Stat_Datapoint",
+					"description": "the KNX datapoint type for stat",
+					"type": "choice",
+					"choices": {
+						"5.001": "5.001-Scaling"
+					},
+					"xpl": false
+				},
+				{
+					"key": "address_stat",
+					"description": "The stats address",
+					"type": "string",
+					"xpl": false
+				}
+			]
+		},
+		"knxplugin.scale": {
+			"id": "knxplugin.scale",
+			"description": "scale function",
+			"name": "Command in persent",
+			"commands": ["scale"],
+			"sensors": ["scale_state"],
+			"parameters": [{
+					"key": "Cmd_Datapoint",
+					"description": "the KNX datapoint type for command",
+					"type": "choice",
+					"choices": {
+						"5.001": "5.001-Scaling"
+					},
+					"xpl": false
+				},
+				{
+					"key": "address_cmd",
+					"description": "The command address",
+					"type": "string",
+					"xpl": false
+				},
+				{
+					"key": "Stat_Datapoint",
+					"description": "the KNX datapoint type for stat",
+					"type": "choice",
+					"choices": {
+						"5.001": "5.001-Scaling"
+					},
+					"xpl": false
+				},
+				{
+					"key": "address_stat",
+					"description": "The stats address",
+					"type": "string",
+					"xpl": false
+				}
+			]
+		}
+	},
+	"commands": {
+		"switch": {
+			"name": "switch",
+			"return_confirmation": true,
+			"parameters": [{
+				"key": "value",
+				"data_type": "DT_Switch",
+				"conversion": ""
+			}]
+		},
+
+		"UpDown": {
+			"name": "UpDown",
+			"return_confirmation": true,
+			"parameters": [{
+				"key": "value",
+				"data_type": "DT_UpDown",
+				"conversion": ""
+			}]
+		},
+
+		"scale": {
+			"name": "scale",
+			"return_confirmation": true,
+			"parameters": [{
+				"key": "value",
+				"data_type": "DT_Scaling",
+				"conversion": ""
+			}]
+		}
+	},
+	"xpl_commands": {},
+
+	"xpl_stats": {},
+
+	"sensors": {
+		"state": {
+			"name": "state",
+			"data_type": "DT_Switch",
+			"conversion": "",
+			"incremental": false,
+			"timeout": 0,
+			"history": {
+				"store": true,
+				"duplicate": false,
+				"max": 0,
+				"expire": 0,
+				"round_value": 0
+			}
+		},
+		"state_UpDown": {
+			"name": "state",
+			"data_type": "DT_UpDown",
+			"conversion": "",
+			"incremental": false,
+			"timeout": 0,
+			"history": {
+				"store": true,
+				"duplicate": false,
+				"max": 0,
+				"expire": 0,
+				"round_value": 0
+			}
+		},
+		"scale_state": {
+			"name": "state",
+			"data_type": "DT_Scaling",
+			"conversion": "",
+			"incremental": false,
+			"timeout": 0,
+			"history": {
+				"store": true,
+				"duplicate": false,
+				"max": 0,
+				"expire": 0,
+				"round_value": 0
+			}
+		},
+		"number_state": {
+			"name": "state",
+			"data_type": "DT_Number",
+			"conversion": "",
+			"incremental": false,
+			"timeout": 0,
+			"history": {
+				"store": true,
+				"duplicate": false,
+				"max": 0,
+				"expire": 0,
+				"round_value": 0
+			}
+		}
+	}
 }
