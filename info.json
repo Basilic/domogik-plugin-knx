@@ -5,8 +5,8 @@
 		"author_email": "Basilic3 at hotmail.com",
 		"tags": ["knxd", "eibd", "knx","domotique"],
 		"dependencies": [{
-				"id": "EIBD or knxd",
-				"type": "Daemon"
+				"id": "EIBD or knxd"
+				type": "Daemon"
 			},
 
 			{
@@ -121,7 +121,7 @@
 			"description": "Boolean sensor",
 			"name": "Sensor Boolean",
 			"commands": [],
-			"sensors": ["state"],
+			"sensors": ["stat_boolean"],
 			"parameters": [{
 					"key": "Stat_Datapoint",
 					"description": "the KNX datapoint type for stat",
@@ -268,9 +268,25 @@
 	"xpl_stats": {},
 
 	"sensors": {
+	
+	
 		"state": {
 			"name": "state",
 			"data_type": "DT_Switch",
+			"conversion": "",
+			"incremental": false,
+			"timeout": 0,
+			"history": {
+				"store": true,
+				"duplicate": false,
+				"max": 0,
+				"expire": 0,
+				"round_value": 0
+			}
+		},
+		"stat_boolean": {
+			"name": "stat_boolean",
+			"data_type": "DT_Bool",
 			"conversion": "",
 			"incremental": false,
 			"timeout": 0,
