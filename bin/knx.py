@@ -88,27 +88,31 @@ class KNXManager(Plugin):
 
 		for item in self.device:
 			self.log.info(item)
-			if item["parameters"]["address_stat"]["value"] != "":
-				for sensor in item["sensors"]:
-					sensors_list[item["parameters"]["address_stat"]["value"]]=item["sensors"][sensor]["id"]
-					if datapoint_list.get(item["parameters"]["address_stat"]["value"],"Default")=="Default":
-						datapoint_list[item["parameters"]["address_stat"]["value"]]=item["parameters"]["Stat_Datapoint"]["value"]
-					else:
-						if item["parameters"]["address_cmd"]["value"] != "":
-							sensors_list[item["parameters"]["address_cmd"]["value"]]=item["sensors"]["state"]["id"]
+			if item["parameters"].get("address_stat", "default") != "default":
+				if item["parameters"]["address_stat"]["value"] != "":
+					for sensor in item["sensors"]:
+						sensors_list[item["parameters"]["address_stat"]["value"]]=item["sensors"][sensor]["id"]
+						if datapoint_list.get(item["parameters"]["address_stat"]["value"],"Default")=="Default":
+							datapoint_list[item["parameters"]["address_stat"]["value"]]=item["parameters"]["Stat_Datapoint"]["value"]
+						else:
+							if item["parameters"]["address_cmd"]["value"] != "":
+								sensors_list[item["parameters"]["address_cmd"]["value"]]=item["sensors"]["state"]["id"]
 
-			if item["parameters"]["address_cmd"]["value"] != "":
-				for command in item["commands"]:
-					commands_list[item["commands"][command]["id"]]=item["parameters"]["address_cmd"]["value"]
-				if datapoint_list.get(item["parameters"]["address_cmd"]["value"],"Default")=="Default":
-					datapoint_list[item["parameters"]["address_cmd"]["value"]]=item["parameters"]["Cmd_Datapoint"]["value"]
-       		self.read_sensors() 
+			if item["parameters"].get("address_cmd", "default") != "default":  # problème si sensor alone
+				if item["parameters"]["address_cmd"]["value"] != "":
+					for command in item["commands"]:
+						commands_list[item["commands"][command]["id"]]=item["parameters"]["address_cmd"]["value"]
+					if datapoint_list.get(item["parameters"]["address_cmd"]["value"],"Default")=="Default":
+						datapoint_list[item["parameters"]["address_cmd"]["value"]]=item["parameters"]["Cmd_Datapoint"]["value"]
+				else:
+					self.log.error("No command group for item")
+
+		self.read_sensors() 
 		self.log.info('Sensor list: %s' %sensors_list)
 		self.log.info('Command List: %s' %commands_list)
 		self.log.info('Datapoint dict: %s' %datapoint_list)
 		self.register_cb_update_devices(self.reload_devices)
 		self.log.info("Plugin ready :)")
-		
 		self.ready()
 
 
